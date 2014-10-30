@@ -1,5 +1,3 @@
-var songs_in_queue = 0;
-
 function get_next() {
     $.ajax({
         url: 'http://localhost:5000/api/tracks/next/',
@@ -8,10 +6,6 @@ function get_next() {
         if (json.next) {
             console.log('got next ' + JSON.stringify(json.next));
             DZ.player.addToQueue([json.next.id]);
-            songs_in_queue += 1;
-            window.setTimeout(function () {
-                DZ.player.play();
-            }, 1000);
             delete_next(json.next.id);
         } else {
             console.log('no next, will try again...');
@@ -56,9 +50,8 @@ function onPlayerLoaded() {
     event_listener_append('player_loaded');
     
     DZ.Event.subscribe('current_track', function(arg){
-        songs_in_queue -= 1;
         event_listener_append('current_track', arg.index, arg.track.title, arg.track.album.title);
-        if (songs_in_queue === 0) {
+        if (DZ.player.getCurrentIndex() === DZ.player.getTrackList().length - 1) {
             get_next();
         }
     });
