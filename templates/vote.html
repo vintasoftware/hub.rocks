@@ -12,6 +12,8 @@
     <script src="https://js.pusher.com/2.2/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/angular.pusher/latest/pusher-angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.11.0/js/standalone/selectize.min.js"></script>
+    <script src="{{ url_for('static', filename='angular-local-storage.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='angular-uuid4.min.js') }}"></script>
     
     <script>
       var app = angular.module('hubrocks.const', []);
@@ -30,8 +32,9 @@
   {% raw %}
   <body ng-controller="HubrocksCtrl">
     <ul>
-      <li ng-repeat="track in tracks">
-        <p>{{ track.title }} - {{ track.artist }}</p>
+      <p>now playing: {{ data.now_playing.title }} - {{ data.now_playing.artist }}</p>
+      <li ng-repeat="track in data.tracks">
+        <p>{{ track.title }} - {{ track.artist }} - {{ track.votes }} <button class="btn">Votar</button></p>
       </li>
     </ul>
 

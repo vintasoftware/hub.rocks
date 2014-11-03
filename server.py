@@ -1,28 +1,33 @@
 import os
 import requests
 
-from flask import Flask, Response, abort, render_template, send_from_directory
+from flask import (
+    Flask, jsonify, request,
+    abort, render_template,
+    send_from_directory)
 from flask.ext.cors import CORS
-from flask.ext.pymongo import PyMongo
-from bson import json_util
 from pusher import pusher_from_url
-
+import redis
+from redis_collections import Dict
 
 app = Flask(__name__)
-app.config['MONGO_URI'] = os.environ.get('MONGOHQ_URL')
 CORS(app, resources=r'/api/*', headers='Content-Type')
-mongo = PyMongo(app)
 pusher = pusher_from_url()
 
-
-def json_response(data):
-    return Response(json_util.dumps(data), mimetype='application/json')
+redis_cli = redis.from_url(os.environ.get('OPENREDIS_URL'))
+tracks = Dict(redis=redis_cli, key='tracks')
 
 
 @app.route("/api/tracks/", methods=['GET'])
 def tracks_get():
-    tracks = list(mongo.db.tracks.find().sort('votes', -1))
-    return json_response({'tracks': tracks})
+    now_playing = tracks.get('now_playing')
+    track_list = [track for key, track in tracks.items() if key != 'now_playing']
+    track_list.sort(key=lambda x: len(x['votes']), reverse=True)
+    
+    return jsonify({
+        'now_playing': now_playing,
+        'tracks': track_list,
+    })
 
 
 def _fetch_track_from_deezer(deezer_id):
@@ -33,21 +38,41 @@ def _fetch_track_from_deezer(deezer_id):
             'deezer_id': deezer_id,
             'title': response_json['title'],
             'artist': response_json['artist']['name'],
-            'votes': 0
+            'votes': []
         }
 
-@app.route("/api/tracks/<deezer_id>/", methods=['PUT'])
-def track_put(deezer_id):
-    track = mongo.db.tracks.find_one({'deezer_id': deezer_id})
-    
-    if not track:
+@app.route("/api/tracks/<deezer_id>/vote/", methods=['PUT'])
+def track_vote_put(deezer_id):
+    user = request.headers.get('Authorization')
+
+    if not user:
+        abort(400)
+
+    if deezer_id not in tracks:
         track = _fetch_track_from_deezer(deezer_id)
         if not track:
             abort(400)
+    else:
+        track = tracks[deezer_id]
+    
+    if user not in track['votes']:
+        track['votes'].append(user)
+    tracks[deezer_id] = track
 
-        mongo.db.tracks.insert(track)
+    pusher['tracks'].trigger('updated');
 
-    mongo.db.tracks.update({'deezer_id': deezer_id}, {'$inc': {'votes': 1}})
+    return '', 204
+
+
+@app.route("/api/tracks/<deezer_id>/vote/", methods=['DELETE'])
+def track_vote_delete(deezer_id):
+    user = request.headers.get('Authorization')
+    
+    if not (deezer_id in tracks and user):
+        abort(400)
+
+    del tracks['deezer_id']
+
     pusher['tracks'].trigger('updated');
 
     return '', 204
@@ -55,20 +80,23 @@ def track_put(deezer_id):
 
 @app.route("/api/tracks/next/", methods=['GET'])
 def track_next_get():
-    track = mongo.db.tracks.find().sort('votes', -1).limit(1)
-    if track.has_next():
-        next = track.next()
+    if tracks:
+        next = max(tracks.values(), key=lambda x: len(x['votes']))
     else:
         next = None
     
-    return json_response({'next': next})
+    return jsonify({'next': next})
 
 
-@app.route("/api/tracks/<deezer_id>/", methods=['DELETE'])
-def track_delete(deezer_id):
-    mongo.db.tracks.remove({'deezer_id' : deezer_id})
+@app.route("/api/tracks/<deezer_id>/now-playing/", methods=['PUT'])
+def track_now_playing_put(deezer_id):
+    if deezer_id not in tracks:
+        abort(400)
+
+    tracks['now_playing'] = tracks[deezer_id]
+
     pusher['tracks'].trigger('updated');
-    
+
     return '', 204
 
 

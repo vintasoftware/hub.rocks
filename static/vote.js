@@ -1,18 +1,28 @@
 (function () {
   var app = angular.module('hubrocks', [
-    'pusher-angular', 'hubrocks.const']);
+    'LocalStorageModule', 'uuid4', 'pusher-angular', 'hubrocks.const']);
 
-  app.factory('HubrocksAPI', ['API_URL', 'PUSHER_API_KEY', '$http', '$pusher',
-    function (API_URL, PUSHER_API_KEY, $http, $pusher) {
-      var tracks = [];
+  app.factory('my_uuid', ['localStorageService', 'uuid4',
+    function (localStorageService, uuid4) {
+      var my_uuid = localStorageService.get('my_uuid');
+      if (!my_uuid) {
+        my_uuid = uuid4.generate();
+        localStorageService.set('my_uuid', my_uuid);
+      }
+
+      return my_uuid;
+    }
+  ]);
+
+  app.factory('HubrocksAPI', ['API_URL', 'PUSHER_API_KEY', 'my_uuid', '$http', '$pusher',
+    function (API_URL, PUSHER_API_KEY, my_uuid, $http, $pusher) {
+      $http.defaults.headers.common.Authorization = 'Token ' + my_uuid;
+      var data = {};
 
       var fetchTracks = function () {
         $http.get(API_URL + '/tracks/')
-          .success(function (data) {
-            tracks.length = 0;
-            data.tracks.forEach(function (t) {
-              tracks.push(t);
-            });
+          .success(function (newData) {
+            angular.extend(data, newData);
           });
       };
       fetchTracks();
@@ -23,15 +33,25 @@
         fetchTracks();
       });
 
+      var insertVote = function (deezer_id) {
+        $http.put(API_URL + '/tracks/' + deezer_id + '/vote/');
+      };
+
+      var deleteVote = function (deezer_id) {
+        $http.delete(API_URL + '/tracks/' + deezer_id + '/vote/');
+      };
+
       return {
-        tracks: tracks
+        data: data,
+        insertVote: insertVote,
+        deleteVote: deleteVote,
       };
     }
   ]);
 
   app.controller('HubrocksCtrl', ['HubrocksAPI', '$scope',
     function(HubrocksAPI, $scope) {
-      $scope.tracks = HubrocksAPI.tracks;
+      $scope.data = HubrocksAPI.data;
     }
   ]);
 
