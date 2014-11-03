@@ -5,8 +5,10 @@ function get_next() {
     }).done(function (json) {
         if (json.next) {
             console.log('got next ' + JSON.stringify(json.next));
-            DZ.player.addToQueue([json.next.deezer_id]);
+            //DZ.player.addToQueue([json.next.deezer_id]);
             delete_next(json.next.deezer_id);
+
+            DZ.player.playTracks([json.next.deezer_id]);
         } else {
             console.log('no next, will try again...');
             fail();
@@ -49,8 +51,8 @@ function onPlayerLoaded() {
     $("#controlers input").attr('disabled', false);
     event_listener_append('player_loaded');
     
-    DZ.Event.subscribe('current_track', function(arg){
-        event_listener_append('current_track', arg.index, arg.track.title, arg.track.album.title);
+    DZ.Event.subscribe('track_end', function(currentIndex) {
+        console.log(currentIndex);
         if (DZ.player.getCurrentIndex() === DZ.player.getTrackList().length - 1) {
             get_next();
         }

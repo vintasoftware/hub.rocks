@@ -15,7 +15,9 @@ CORS(app, resources=r'/api/*', headers='Content-Type')
 pusher = pusher_from_url()
 
 redis_cli = redis.from_url(os.environ.get('REDISCLOUD_URL'))
+
 tracks = Dict(redis=redis_cli, key='tracks')
+now_playing = Dict(redis=redis_cli, key='now_playing')
 
 
 def _get_request_user():
@@ -29,12 +31,11 @@ def _get_request_user():
 
 @app.route("/api/tracks/", methods=['GET'])
 def tracks_get():
-    now_playing = tracks.get('now_playing')
     track_list = tracks.values()
     track_list.sort(key=lambda x: len(x['votes']), reverse=True)
     
     return jsonify({
-        'now_playing': now_playing,
+        'now_playing': dict(now_playing),
         'tracks': track_list,
     })
 
@@ -50,6 +51,7 @@ def _fetch_track_from_deezer(deezer_id):
                 'artist': response_json['artist']['name'],
                 'votes': []
             }
+
 
 @app.route("/api/tracks/<deezer_id>/vote/", methods=['PUT'])
 def track_vote_put(deezer_id):
@@ -120,7 +122,7 @@ def track_now_playing_put(deezer_id):
     if deezer_id not in tracks:
         abort(400)
 
-    tracks['now_playing'] = tracks[deezer_id]
+    now_playing.update(tracks[deezer_id])
 
     pusher['tracks'].trigger('updated')
 
