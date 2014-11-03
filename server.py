@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, render_template, send_from_directory
 from flask.ext.cors import CORS
 import requests
 
@@ -21,7 +21,7 @@ def _fetch_track_from_deezer(track_id):
             'id': track_id,
             'title': response_json['title'],
             'artist': response_json['artist']['name'],
-            'priority': 0
+            '.priority': 0
         }
 
 @app.route("/api/tracks/<track_id>/", methods=['PUT'])
@@ -33,14 +33,14 @@ def track_put(track_id):
 
         tracks[track_id] = track
 
-    tracks[track_id]['priority'] += 1
+    tracks[track_id]['.priority'] += 1
 
     return '', 204
 
 @app.route("/api/tracks/next/", methods=['GET'])
 def track_next_get():
     if tracks:
-        next = max(tracks.values(), key=lambda x: x['priority'])
+        next = max(tracks.values(), key=lambda x: x['.priority'])
     else:
         next = None
     
@@ -54,6 +54,14 @@ def track_delete(track_id):
     del tracks[track_id]
 
     return '', 204
+
+@app.route("/")
+def vote_html():
+    return render_template('vote.html')
+
+@app.route('/static/<path:path>')
+def static_proxy(path):
+    return send_from_directory(app.static_folder, path)
 
 if __name__ == "__main__":
     app.run(debug=True)

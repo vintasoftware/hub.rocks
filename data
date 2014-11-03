@@ -5,37 +5,37 @@
     {
       "artist": "Afro Celt Sound System", 
       "id": "3134762", 
-      "priority": 2, 
+      ".priority": 2, 
       "title": "Even In My Dreams"
     }, 
     {
       "artist": "Eric Serra", 
       "id": "3134062", 
-      "priority": 1, 
+      ".priority": 1, 
       "title": "Leeloominai"
     }, 
     {
       "artist": "The Auteurs", 
       "id": "3124869", 
-      "priority": 1, 
+      ".priority": 1, 
       "title": "Bailed Out"
     }, 
     {
       "artist": "Roxy Music", 
       "id": "3134869", 
-      "priority": 1, 
+      ".priority": 1, 
       "title": "True To Life (1999 Digital Remaster)"
     }, 
     {
       "artist": "Roxy Music", 
       "id": "3134862", 
-      "priority": 1, 
+      ".priority": 1, 
       "title": "The Space Between (1999 Digital Remaster)"
     }, 
     {
       "artist": "Roxy Music", 
       "id": "3134860", 
-      "priority": 1, 
+      ".priority": 1, 
       "title": "Running Wild (1999 Digital Remaster)"
     }
   ]
