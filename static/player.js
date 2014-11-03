@@ -4,9 +4,9 @@ function get_next() {
         type: 'GET'
     }).done(function (json) {
         if (json.next) {
-            console.log('got next ' + JSON.stringify(json.next));
-            //DZ.player.addToQueue([json.next.deezer_id]);
-            delete_next(json.next.deezer_id);
+            set_now_playing(json.next.deezer_id).then(function () {
+                delete_next(json.next.deezer_id);
+            });
 
             DZ.player.playTracks([json.next.deezer_id]);
         } else {
@@ -31,6 +31,24 @@ function delete_next(deezer_id) {
     });
 }
 
+function set_now_playing(deezer_id) {
+    return $.ajax({
+        url: API_URL + '/tracks/' + deezer_id + '/now-playing/',
+        type: 'PUT'
+    }).done(function () {
+        console.log('set now-playing');
+    });
+}
+
+function delete_now_playing(deezer_id) {
+    $.ajax({
+        url: API_URL + '/tracks/' + deezer_id + '/now-playing/',
+        type: 'DELETE'
+    }).done(function () {
+        console.log('deleted now-playing');
+    });
+}
+
 
 $(document).ready(function(){
     $("#controlers input").attr('disabled', true);
@@ -51,11 +69,10 @@ function onPlayerLoaded() {
     $("#controlers input").attr('disabled', false);
     event_listener_append('player_loaded');
     
-    DZ.Event.subscribe('track_end', function(currentIndex) {
-        console.log(currentIndex);
-        if (DZ.player.getCurrentIndex() === DZ.player.getTrackList().length - 1) {
-            get_next();
-        }
+    DZ.Event.subscribe('track_end', function (currentIndex) {
+        var track = DZ.player.getCurrentTrack();
+        delete_now_playing(track.id);
+        get_next();
     });
     get_next();
     
