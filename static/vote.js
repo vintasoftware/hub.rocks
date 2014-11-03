@@ -17,7 +17,9 @@
   app.factory('HubrocksAPI', ['API_URL', 'PUSHER_API_KEY', 'my_uuid', '$http', '$pusher',
     function (API_URL, PUSHER_API_KEY, my_uuid, $http, $pusher) {
       $http.defaults.headers.common.Authorization = 'Token ' + my_uuid;
-      var data = {};
+      var data = {
+        'my_uuid': my_uuid
+      };
 
       var fetchTracks = function () {
         $http.get(API_URL + '/tracks/')
@@ -52,6 +54,8 @@
   app.controller('HubrocksCtrl', ['HubrocksAPI', '$scope',
     function(HubrocksAPI, $scope) {
       $scope.data = HubrocksAPI.data;
+      $scope.insertVote = HubrocksAPI.insertVote;
+      $scope.deleteVote = HubrocksAPI.deleteVote;
     }
   ]);
 

@@ -18,6 +18,15 @@ redis_cli = redis.from_url(os.environ.get('OPENREDIS_URL'))
 tracks = Dict(redis=redis_cli, key='tracks')
 
 
+def _get_request_user():
+    authorization = request.headers.get('Authorization')
+    split = authorization.split(' ')
+    if len(split) == 2:
+        token_name, token = split
+        if token_name == 'Token':
+            return token
+
+
 @app.route("/api/tracks/", methods=['GET'])
 def tracks_get():
     now_playing = tracks.get('now_playing')
@@ -43,7 +52,7 @@ def _fetch_track_from_deezer(deezer_id):
 
 @app.route("/api/tracks/<deezer_id>/vote/", methods=['PUT'])
 def track_vote_put(deezer_id):
-    user = request.headers.get('Authorization')
+    user = _get_request_user()
 
     if not user:
         abort(400)
@@ -59,23 +68,28 @@ def track_vote_put(deezer_id):
         track['votes'].append(user)
     tracks[deezer_id] = track
 
-    pusher['tracks'].trigger('updated');
+    pusher['tracks'].trigger('updated')
 
     return '', 204
 
 
 @app.route("/api/tracks/<deezer_id>/vote/", methods=['DELETE'])
 def track_vote_delete(deezer_id):
-    user = request.headers.get('Authorization')
+    user = _get_request_user()
     
     if not (deezer_id in tracks and user):
         abort(400)
 
-    del tracks['deezer_id']
+    try:
+        track = tracks[deezer_id]
+        track['votes'].remove(user)
+        tracks[deezer_id] = track
 
-    pusher['tracks'].trigger('updated');
+        pusher['tracks'].trigger('updated')
 
-    return '', 204
+        return '', 204
+    except ValueError:
+        abort(400)
 
 
 @app.route("/api/tracks/next/", methods=['GET'])
@@ -95,7 +109,7 @@ def track_now_playing_put(deezer_id):
 
     tracks['now_playing'] = tracks[deezer_id]
 
-    pusher['tracks'].trigger('updated');
+    pusher['tracks'].trigger('updated')
 
     return '', 204
 
