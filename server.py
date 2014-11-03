@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app, resources=r'/api/*', headers='Content-Type')
 pusher = pusher_from_url()
 
-redis_cli = redis.from_url(os.environ.get('OPENREDIS_URL'))
+redis_cli = redis.from_url(os.environ.get('REDISCLOUD_URL'))
 tracks = Dict(redis=redis_cli, key='tracks')
 
 
@@ -30,7 +30,7 @@ def _get_request_user():
 @app.route("/api/tracks/", methods=['GET'])
 def tracks_get():
     now_playing = tracks.get('now_playing')
-    track_list = [track for key, track in tracks.items() if key != 'now_playing']
+    track_list = tracks.values()
     track_list.sort(key=lambda x: len(x['votes']), reverse=True)
     
     return jsonify({
@@ -103,6 +103,18 @@ def track_next_get():
     return jsonify({'next': next})
 
 
+@app.route("/api/tracks/<deezer_id>/", methods=['DELETE'])
+def track_delete(deezer_id):
+    if deezer_id not in tracks:
+        abort(400)
+
+    del tracks[deezer_id]
+
+    pusher['tracks'].trigger('updated')
+
+    return '', 204
+
+
 @app.route("/api/tracks/<deezer_id>/now-playing/", methods=['PUT'])
 def track_now_playing_put(deezer_id):
     if deezer_id not in tracks:
@@ -118,6 +130,11 @@ def track_now_playing_put(deezer_id):
 @app.route("/")
 def vote_html():
     return render_template('vote.html', PUSHER_API_KEY=pusher.key)
+
+
+@app.route("/player/")
+def deezer_html():
+    return render_template('deezer.html')
 
 
 @app.route('/static/<path:path>')

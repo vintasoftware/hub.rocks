@@ -1,12 +1,12 @@
 function get_next() {
     $.ajax({
-        url: 'http://localhost:5000/api/tracks/next/',
+        url: API_URL + '/tracks/next/',
         type: 'GET'
     }).done(function (json) {
         if (json.next) {
             console.log('got next ' + JSON.stringify(json.next));
-            DZ.player.addToQueue([json.next.id]);
-            delete_next(json.next.id);
+            DZ.player.addToQueue([json.next.deezer_id]);
+            delete_next(json.next.deezer_id);
         } else {
             console.log('no next, will try again...');
             fail();
@@ -20,9 +20,9 @@ function get_next() {
     }
 }
 
-function delete_next(next_id) {
+function delete_next(deezer_id) {
     $.ajax({
-        url: 'http://localhost:5000/api/tracks/' + next_id + '/',
+        url: API_URL + '/tracks/' + deezer_id + '/',
         type: 'DELETE'
     }).done(function () {
         console.log('deleted next');
