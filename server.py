@@ -131,7 +131,7 @@ def track_now_playing_put(deezer_id):
 
 @app.route("/api/tracks/<deezer_id>/now-playing/", methods=['DELETE'])
 def track_now_playing_delete(deezer_id):
-    if deezer_id != now_playing.deezer_id:
+    if deezer_id != now_playing['deezer_id']:
         abort(400)
 
     now_playing.clear()
