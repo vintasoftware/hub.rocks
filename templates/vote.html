@@ -12,6 +12,18 @@
     <script src="https://js.pusher.com/2.2/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/angular.pusher/latest/pusher-angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.11.0/js/standalone/selectize.min.js"></script>
+    
+    <script>
+      var app = angular.module('hubrocks.const', []);
+
+      app.factory('API_URL', function () {
+        return '{{ request.url_root }}api';
+      });
+
+      app.factory('PUSHER_API_KEY', function () {
+        return '{{ PUSHER_API_KEY }}';
+      });
+    </script>
     <script src="{{ url_for('static', filename='vote.js') }}"></script>
   </head>
 

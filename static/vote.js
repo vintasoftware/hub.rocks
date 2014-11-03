@@ -1,10 +1,9 @@
 (function () {
-  var API_URL = 'http://localhost:5000/api';
-  var PUSHER_API_KEY = 'b434843baa2d1d63ba8c';
-  var app = angular.module('hubrocks', ['pusher-angular']);
+  var app = angular.module('hubrocks', [
+    'pusher-angular', 'hubrocks.const']);
 
-  app.factory('HubrocksAPI', ['$http', '$pusher',
-    function ($http, $pusher) {
+  app.factory('HubrocksAPI', ['API_URL', 'PUSHER_API_KEY', '$http', '$pusher',
+    function (API_URL, PUSHER_API_KEY, $http, $pusher) {
       var tracks = [];
 
       var fetchTracks = function () {

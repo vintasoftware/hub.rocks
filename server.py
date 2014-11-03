@@ -74,7 +74,7 @@ def track_delete(deezer_id):
 
 @app.route("/")
 def vote_html():
-    return render_template('vote.html')
+    return render_template('vote.html', PUSHER_API_KEY=pusher.key)
 
 
 @app.route('/static/<path:path>')
