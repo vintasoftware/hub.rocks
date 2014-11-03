@@ -56,6 +56,10 @@
       $scope.data = HubrocksAPI.data;
       $scope.insertVote = HubrocksAPI.insertVote;
       $scope.deleteVote = HubrocksAPI.deleteVote;
+
+      $scope.insertTrack = function () {
+        HubrocksAPI.insertVote($scope.newTrack);
+      };
     }
   ]);
 

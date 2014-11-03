@@ -47,7 +47,9 @@
       </li>
     </ul>
 
-    <select class="select-track" placeholder="Digite o nome de uma música..."></select>
+    <select class="select-track" placeholder="Digite o nome de uma música..."
+            ng-model="newTrack"
+            ng-change="insertTrack()"></select>
   </body>
   {% endraw %}
 </html>

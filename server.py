@@ -43,12 +43,13 @@ def _fetch_track_from_deezer(deezer_id):
     response = requests.get('http://api.deezer.com/track/{0}'.format(deezer_id))
     if response.status_code == 200:
         response_json = response.json()
-        return {
-            'deezer_id': deezer_id,
-            'title': response_json['title'],
-            'artist': response_json['artist']['name'],
-            'votes': []
-        }
+        if 'error' not in response_json:
+            return {
+                'deezer_id': deezer_id,
+                'title': response_json['title'],
+                'artist': response_json['artist']['name'],
+                'votes': []
+            }
 
 @app.route("/api/tracks/<deezer_id>/vote/", methods=['PUT'])
 def track_vote_put(deezer_id):
