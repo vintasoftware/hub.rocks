@@ -1,9 +1,10 @@
 (function () {
   var API_URL = 'http://localhost:5000/api';
-  var app = angular.module('hubrocks', []);
+  var PUSHER_API_KEY = 'b434843baa2d1d63ba8c';
+  var app = angular.module('hubrocks', ['pusher-angular']);
 
-  app.factory('HubrocksAPI', ['$http',
-    function ($http) {
+  app.factory('HubrocksAPI', ['$http', '$pusher',
+    function ($http, $pusher) {
       var tracks = [];
 
       var fetchTracks = function () {
@@ -16,6 +17,12 @@
           });
       };
       fetchTracks();
+
+      var pusher = $pusher(new Pusher(PUSHER_API_KEY));
+      pusher.subscribe('tracks');
+      pusher.bind('updated', function () {
+        fetchTracks();
+      });
 
       return {
         tracks: tracks

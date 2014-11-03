@@ -1,15 +1,18 @@
+import os
+import requests
+
 from flask import Flask, Response, abort, render_template, send_from_directory
 from flask.ext.cors import CORS
 from flask.ext.pymongo import PyMongo
-import requests
-import os
 from bson import json_util
+from pusher import pusher_from_url
 
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = os.environ.get('MONGOHQ_URL')
 CORS(app, resources=r'/api/*', headers='Content-Type')
 mongo = PyMongo(app)
+pusher = pusher_from_url()
 
 
 def json_response(data):
@@ -45,6 +48,7 @@ def track_put(deezer_id):
         mongo.db.tracks.insert(track)
 
     mongo.db.tracks.update({'deezer_id': deezer_id}, {'$inc': {'votes': 1}})
+    pusher['tracks'].trigger('updated');
 
     return '', 204
 
@@ -63,6 +67,7 @@ def track_next_get():
 @app.route("/api/tracks/<deezer_id>/", methods=['DELETE'])
 def track_delete(deezer_id):
     mongo.db.tracks.remove({'deezer_id' : deezer_id})
+    pusher['tracks'].trigger('updated');
     
     return '', 204
 

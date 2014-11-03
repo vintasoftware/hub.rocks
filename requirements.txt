@@ -6,6 +6,7 @@ MarkupSafe==0.23
 Werkzeug==0.9.6
 argparse==1.2.1
 itsdangerous==0.24
+pusher==0.8
 pymongo==2.7.2
 python-firebase==1.2
 requests==2.4.3
