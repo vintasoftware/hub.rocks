@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style type="text/css">
-      .progressbarplay {
-        cursor:pointer;overflow: hidden;height: 8px;margin-bottom: 8px;background-color: #F7F7F7;background-image: -moz-linear-gradient(top,whiteSmoke,#F9F9F9);background-image: -ms-linear-gradient(top,whiteSmoke,#F9F9F9);background-image: -webkit-gradient(linear,0 0,0 100%,from(whiteSmoke),to(#F9F9F9));background-image: -webkit-linear-gradient(top,whiteSmoke,#F9F9F9);background-image: -o-linear-gradient(top,whiteSmoke,#F9F9F9);background-image: linear-gradient(top,whiteSmoke,#F9F9F9);background-repeat: repeat-x;filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5',endColorstr='#f9f9f9',GradientType=0);-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);-moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);-webkit-border-radius: 6px;-moz-border-radius: 6px;border-radius: 6px;
-      }
-      .progressbarplay .bar {
-        cursor:pointer;background: #4496C6;width: 0;height: 8px;color: white;font-size: 12px;text-align: center;text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);-webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);-moz-box-shadow: inset 0 -1px 0 rgba(0,0,0,0.15);box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;-webkit-transition: width .6s ease;-moz-transition: width .6s ease;-ms-transition: width .6s ease;-o-transition: width .6s ease;transition: width .6s ease;
-      }
-    </style>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="http://cdn-files.deezer.com/js/min/dz-v00202681.js"></script>
 
@@ -20,35 +11,6 @@
   <body>
     <div id="dz-root"></div>
     <div id="player" style="width:100%;" align="center"></div>
-    <br/>
-    <div id="controlers">
-      <input type="button" onclick="DZ.player.playAlbum(302127); return false;" value="Play Daft Punk - Discovery"/>
-      <input type="button" onclick="DZ.player.playAlbum(301775); return false;" value="Play Daft Punk - Homework"/>
-      <br/>
-      <input type="button" onclick="DZ.player.playRadio(203); return false;" value="Play Radio"/>
-      <input type="button" onclick="DZ.player.playSmartRadio(13); return false;" value="Play Smart Radio"/>
-      
-      <br/>
-      <input type="button" onclick="DZ.player.play(); return false;" value="play"/>
-      <input type="button" onclick="DZ.player.pause(); return false;" value="pause"/>
-      <input type="button" onclick="DZ.player.prev(); return false;" value="prev"/>
-      <input type="button" onclick="DZ.player.next(); return false;" value="next"/>
-      <br/>
-      <input type="button" onclick="DZ.player.setVolume(20); return false;" value="set Volume 20"/>
-      <input type="button" onclick="DZ.player.setVolume(80); return false;" value="set Volume 80"/>
-
-      <br/>
-      <input type="button" onclick="DZ.player.addToQueue([3135556]); return false;" value="add queue 1"/>
-      <input type="button" onclick="DZ.player.addToQueue([1152226]); return false;" value="add queue 2"/>
-      <input type="button" onclick="DZ.player.addToQueue([1152227]); return false;" value="add queue 3"/>
-
-      <br/><br/><br/>
-    </div>
-    <div id="slider_seek" class="progressbarplay" style="">
-      <div class="bar" style="width: 0%;"></div>
-    </div>
     <script src="/static/player.js"></script><br/>
-    event_listener : <br/>
-    <pre id="event_listener" style="height:100px;overflow:auto;"></pre>
   </body>
 </html>
