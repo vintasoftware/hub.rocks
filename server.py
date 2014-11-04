@@ -86,7 +86,11 @@ def track_vote_delete(deezer_id):
     try:
         track = tracks[deezer_id]
         track['votes'].remove(user)
-        tracks[deezer_id] = track
+        
+        if len(track['votes']) == 0:
+            del tracks[deezer_id]
+        else:
+            tracks[deezer_id] = track
 
         pusher['tracks'].trigger('updated')
 
