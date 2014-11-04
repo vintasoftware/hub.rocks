@@ -152,7 +152,7 @@ def vote_html():
 
 @app.route("/player/")
 def deezer_html():
-    return render_template('deezer.html')
+    return render_template('player.html')
 
 
 @app.route('/static/<path:path>')
