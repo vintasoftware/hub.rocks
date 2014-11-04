@@ -2,6 +2,8 @@
 <html ng-app="hubrocks">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Vote</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.0/css/bootstrap.css">
@@ -33,25 +35,34 @@
 
   {% raw %}
   <body ng-controller="HubrocksCtrl">
-    <ul>
-      {{data.my_uuid}}
-      <p>now playing: {{ data.now_playing.title }} - {{ data.now_playing.artist }}</p>
-      <li ng-repeat="track in data.tracks">
-        <p>
-          {{ track.title }} - {{ track.artist }} - {{ track.votes.length }}
-          <button class="btn"
-                  ng-if="track.votes.indexOf(data.my_uuid) === -1"
-                  ng-click="insertVote(track.deezer_id)">Votar</button>
-          <button class="btn"
-                  ng-if="track.votes.indexOf(data.my_uuid) !== -1"
-                  ng-click="deleteVote(track.deezer_id)">Desvotar</button>
-        </p>
-      </li>
-    </ul>
-
-    <select class="select-track" placeholder="Digite o nome de uma música..."
-            ng-model="newTrack"
-            ng-change="insertTrack()"></select>
+    <div class="container">
+      <div class="col-xs-12">
+        <ul>
+          {{data.my_uuid}}
+          <p>now playing: {{ data.now_playing.title }} - {{ data.now_playing.artist }}</p>
+          <li ng-repeat="track in data.tracks">
+            <p>
+              {{ track.title }} - {{ track.artist }} - {{ track.votes.length }}
+              <button class="btn"
+                      ng-if="track.votes.indexOf(data.my_uuid) === -1"
+                      ng-click="insertVote(track.deezer_id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+              <button class="btn"
+                      ng-if="track.votes.indexOf(data.my_uuid) !== -1"
+                      ng-click="deleteVote(track.deezer_id)"><span class="glyphicon glyphicon-remove"></span></button>
+            </p>
+          </li>
+        </ul>
+        
+        <form role="form">
+          <div class="form-group">
+            <select class="form-control select-track" placeholder="Digite o nome de uma música..."
+                      ng-model="newTrack"></select>
+            <button class="btn btn-success pull-right"
+                    ng-click="insertTrack()">Inserir</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </body>
   {% endraw %}
 </html>
