@@ -1,5 +1,10 @@
-.container {
+body > .container {
   max-width: 768px;
+}
+
+footer {
+  margin-top: 50px;
+  font-size: 0.75em;
 }
 
 .selectize-control.select-track .selectize-dropdown > div {

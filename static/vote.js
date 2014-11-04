@@ -58,7 +58,9 @@
       $scope.deleteVote = HubrocksAPI.deleteVote;
 
       $scope.insertTrack = function () {
-        HubrocksAPI.insertVote($scope.newTrack);
+        if ($scope.newTrack) {
+          HubrocksAPI.insertVote($scope.newTrack);
+        }
       };
     }
   ]);

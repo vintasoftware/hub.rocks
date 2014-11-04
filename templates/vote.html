@@ -37,21 +37,32 @@
   <body ng-controller="HubrocksCtrl">
     <div class="container">
       <div class="col-xs-12">
-        <ul>
-          {{data.my_uuid}}
-          <p>now playing: {{ data.now_playing.title }} - {{ data.now_playing.artist }}</p>
-          <li ng-repeat="track in data.tracks">
-            <p>
-              {{ track.title }} - {{ track.artist }} - {{ track.votes.length }}
-              <button class="btn"
+        <h1>hub.rocks</h1>
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th></th>
+            <th colspan="2">
+              <span ng-if="data.now_playing.length">
+                Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
+              </span>
+              <span ng-if="!data.now_playing.length">
+                Escolha uma música abaixo:
+              </span>
+            </th>
+          </tr>
+          <tr ng-repeat="track in data.tracks">
+            <td class="text-center">
+              <button class="btn btn-xs"
                       ng-if="track.votes.indexOf(data.my_uuid) === -1"
                       ng-click="insertVote(track.deezer_id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-              <button class="btn"
+              <button class="btn btn-xs"
                       ng-if="track.votes.indexOf(data.my_uuid) !== -1"
                       ng-click="deleteVote(track.deezer_id)"><span class="glyphicon glyphicon-remove"></span></button>
-            </p>
-          </li>
-        </ul>
+            </td>
+            <td>{{ track.title }} - {{ track.artist }}</td>
+            <td>{{ track.votes.length }}</td>
+          </tr>
+        </table>
         
         <form role="form">
           <div class="form-group">
@@ -61,6 +72,8 @@
                     ng-click="insertTrack()">Inserir</button>
           </div>
         </form>
+
+        <footer>token do usuário: <code>{{data.my_uuid}}</code></footer>
       </div>
     </div>
   </body>
