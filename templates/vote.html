@@ -37,15 +37,15 @@
   <body ng-controller="HubrocksCtrl">
     <div class="container">
       <div class="col-xs-12">
-        <h1>hub.rocks</h1>
+        <h1><span class="glyphicon glyphicon-music"></span> hub.rocks</h1>
         <table class="table table-bordered table-striped">
           <tr>
             <th></th>
             <th colspan="2">
-              <span ng-if="data.now_playing.length">
-                Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
+              <span ng-if="data.now_playing.deezer_id">
+                <span class="glyphicon glyphicon-play"></span> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
               </span>
-              <span ng-if="!data.now_playing.length">
+              <span ng-if="!data.now_playing.deezer_id">
                 Escolha uma música abaixo:
               </span>
             </th>
