@@ -1,0 +1,90 @@
+{% load compress %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html ng-app="hubrocks">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>hub.rocks</title>
+
+    {% compress css %}
+      <link rel="stylesheet" type="text/x-scss" href="{% static 'bootstrap-sass-official/assets/stylesheets/_bootstrap.scss' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'selectize/dist/css/selectize.bootstrap3.css' %}">
+      <link rel="stylesheet" type="text/x-scss" href="{% static 'sass/vote.scss' %}">
+    {% endcompress %}
+  </head>
+
+  <body ng-controller="HubrocksCtrl">
+    {% verbatim %}
+    <div class="container">
+      <div class="col-xs-12">
+        <h1><span class="glyphicon glyphicon-music"></span> hub.rocks</h1>
+        <table class="table table-bordered table-striped">
+          <tr>
+            <th></th>
+            <th colspan="2">
+              <span ng-if="data.now_playing.deezer_id">
+                <span class="glyphicon glyphicon-play"></span> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
+              </span>
+              <span ng-if="!data.now_playing.deezer_id">
+                Escolha uma música abaixo:
+              </span>
+            </th>
+          </tr>
+          <tr ng-repeat="track in data.tracks">
+            <td class="text-center">
+              <button class="btn btn-xs"
+                      ng-if="track.votes.indexOf(data.my_uuid) === -1"
+                      ng-click="insertVote(track.deezer_id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+              <button class="btn btn-xs"
+                      ng-if="track.votes.indexOf(data.my_uuid) !== -1"
+                      ng-click="deleteVote(track.deezer_id)"><span class="glyphicon glyphicon-remove"></span></button>
+            </td>
+            <td>{{ track.title }} - {{ track.artist }}</td>
+            <td>{{ track.votes.length }}</td>
+          </tr>
+        </table>
+        
+        <form role="form">
+          <div class="form-group">
+            <select class="form-control select-track" placeholder="Digite o nome de uma música..."
+                      ng-model="newTrack"></select>
+            <button class="btn btn-success pull-right"
+                    ng-click="insertTrack()">Inserir</button>
+          </div>
+        </form>
+
+        <footer>token do usuário: <code>{{ data.my_uuid }}</code></footer>
+      </div>
+    </div>
+    {% endverbatim %}
+
+    {% compress js %}
+    <script type="text/javascript" src="{% static 'jquery/dist/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'angular/angular.js' %}"></script>
+    <script type="text/javascript" src="{% static 'angular-local-storage/dist/angular-local-storage.js' %}"></script>
+    <script type="text/javascript" src="{% static 'angular-uuid4/angular-uuid4.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap-sass-official/assets/javascripts/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'selectize/dist/js/standalone/selectize.js' %}"></script>
+    <script type="text/javascript" src="{% static 'pusher/dist/pusher.js' %}"></script>
+    <script type="text/javascript" src="{% static 'pusher-angular/lib/pusher-angular.js' %}"></script>
+
+    <script>
+      var app = angular.module('hubrocks.const', []);
+
+      app.factory('API_URL', function () {
+        return '{{ request.url_root }}api';
+      });
+
+      app.factory('PUSHER_API_KEY', function () {
+        return '{{ PUSHER_API_KEY }}';
+      });
+    </script>
+
+    <script src="{% static 'js/vote.js' %}"></script>
+    <script src="{% static 'js/select-track.js' %}"></script>
+    {% endcompress %}
+  </body>
+</html>
