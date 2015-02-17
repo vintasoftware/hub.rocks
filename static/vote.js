@@ -36,7 +36,7 @@
       });
 
       var insertVote = function (deezer_id) {
-        $http.put(API_URL + '/tracks/' + deezer_id + '/vote/');
+        $http.post(API_URL + '/tracks/' + deezer_id + '/vote/');
       };
 
       var deleteVote = function (deezer_id) {

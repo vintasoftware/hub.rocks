@@ -13,6 +13,12 @@ class Track(TimeStampedModel):
     class Meta:
         verbose_name = _("Track")
 
+    def __unicode__(self):
+        return u"Track {}: {} - {}".format(
+            self.service_id,
+            self.artist,
+            self.title)
+
     @classmethod
     def fetch_and_save_track(cls, service_id):
         response = requests.get(
