@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-from django.db.models import Count
 
 from rest_framework import generics, status
 from rest_framework.mixins import DestroyModelMixin
@@ -11,16 +10,14 @@ from tracks.serializers import (
 from tracks.models import Track, Vote, NowPlaying
 
 
-class TracksAPIView(generics.ListAPIView):
+class TrackListAPIView(generics.ListAPIView):
     serializer_class = TrackSerializer
 
     def get_queryset(self):
-        return (Track.objects.
-            annotate(votes_count=Count('votes')).
-            order_by('-votes_count', 'modified'))
+        return Track.ordered_qs()
 
     def get(self, request, *args, **kwargs):
-        response = super(TracksAPIView,
+        response = super(TrackListAPIView,
             self).get(request, *args, **kwargs)
         
         response_data = response.data
@@ -93,7 +90,10 @@ class NowPlayingAPIView(DestroyModelMixin, generics.CreateAPIView):
             return Response(
                 status=status.HTTP_400_BAD_REQUEST)
 
-        NowPlaying.objects.update(track=service_id)
+        if NowPlaying.objects.exists():
+            NowPlaying.objects.update(track_id=service_id)
+        else:
+            NowPlaying.objects.create(track_id=service_id)
 
         return Response(status=status.HTTP_200_OK)
 
@@ -103,3 +103,23 @@ class NowPlayingAPIView(DestroyModelMixin, generics.CreateAPIView):
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+
+class NextTrackAPIView(generics.RetrieveAPIView):
+
+    def retrieve(self, request, *args, **kwargs):
+        qs = Track.ordered_qs()    
+        
+        if qs.exists():
+            data = TrackSerializer(qs[0]).data
+        else:
+            data = None
+
+        return Response({'next': data})
+
+
+class TrackDeleteAPIView(generics.DestroyAPIView):
+
+    def get_object(self, *args, **kwargs):
+        return get_object_or_404(Track,
+            service_id=self.kwargs['service_id'])

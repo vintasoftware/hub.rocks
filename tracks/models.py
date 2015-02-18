@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils.models import TimeStampedModel
@@ -18,6 +19,12 @@ class Track(TimeStampedModel):
             self.service_id,
             self.artist,
             self.title)
+
+    @classmethod
+    def ordered_qs(cls):
+        return (Track.objects.
+            annotate(votes_count=Count('votes')).
+            order_by('-votes_count', 'modified'))
 
     @classmethod
     def fetch_and_save_track(cls, service_id):
