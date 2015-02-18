@@ -42,5 +42,12 @@ class Vote(TimeStampedModel):
     token = models.CharField(max_length=255)
 
     class Meta:
-        verbose_name = _("Track")
+        verbose_name = _("Vote")
         unique_together = ('track', 'token')
+
+
+class NowPlaying(models.Model):
+    track = models.ForeignKey(Track)
+
+    class Meta:
+        verbose_name = _("Now playing")

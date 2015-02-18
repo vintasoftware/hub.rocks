@@ -8,7 +8,7 @@ from requests.exceptions import RequestException
 
 from tracks.serializers import (
     TrackSerializer, VoteSerializer)
-from tracks.models import Track, Vote
+from tracks.models import Track, Vote, NowPlaying
 
 
 class TracksAPIView(generics.ListAPIView):
@@ -26,7 +26,11 @@ class TracksAPIView(generics.ListAPIView):
         response_data = response.data
         response.data = {}
         response.data['tracks'] = response_data
-        response.data['now_playing'] = {}  # TODO
+        try:
+            response.data['now_playing'] = TrackSerializer(
+                NowPlaying.objects.get().track).data
+        except NowPlaying.DoesNotExist:
+             response.data['now_playing'] = None
 
         return response
 
@@ -44,11 +48,6 @@ class VoteAPIView(DestroyModelMixin, generics.CreateAPIView):
             token = None
         
         return token
-
-    def get_object(self, *args, **kwargs):
-        return get_object_or_404(Vote,
-            track=self.kwargs['service_id'],
-            token=self.get_token())
 
     def get_serializer(self, *args, **kwargs):
         kwargs['data'] = {}
@@ -75,3 +74,32 @@ class VoteAPIView(DestroyModelMixin, generics.CreateAPIView):
         return super(VoteAPIView,
             self).create(request, *args, **kwargs)
 
+    def get_object(self, *args, **kwargs):
+        return get_object_or_404(Vote,
+            track=self.kwargs['service_id'],
+            token=self.get_token())
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+class NowPlayingAPIView(DestroyModelMixin, generics.CreateAPIView):
+
+    def create(self, request, *args, **kwargs):
+        service_id = self.kwargs['service_id']
+
+        if not Track.objects.filter(
+            service_id=service_id).exists():
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST)
+
+        NowPlaying.objects.update(track=service_id)
+
+        return Response(status=status.HTTP_200_OK)
+
+    def get_object(self, *args, **kwargs):
+        return get_object_or_404(NowPlaying,
+            track=self.kwargs['service_id'])
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
