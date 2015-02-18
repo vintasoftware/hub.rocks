@@ -35,12 +35,12 @@
         fetchTracks();
       });
 
-      var insertVote = function (deezer_id) {
-        $http.post(API_URL + '/tracks/' + deezer_id + '/vote/');
+      var insertVote = function (service_id) {
+        $http.post(API_URL + '/tracks/' + service_id + '/vote/');
       };
 
-      var deleteVote = function (deezer_id) {
-        $http.delete(API_URL + '/tracks/' + deezer_id + '/vote/');
+      var deleteVote = function (service_id) {
+        $http.delete(API_URL + '/tracks/' + service_id + '/vote/');
       };
 
       return {

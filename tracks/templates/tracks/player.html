@@ -1,0 +1,22 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <title>hub.rocks player</title>
+
+    <script src="{% static 'jquery/dist/jquery.js' %}"></script>
+    <script src="http://cdn-files.deezer.com/js/min/dz-v00202681.js"></script>
+
+    <script>
+      window.API_URL = '/api';
+    </script>
+  </head>
+  <body>
+    <div id="dz-root"></div>
+    <div id="player" style="width:100%;" align="center"></div>
+    <script src="{% static 'js/player.js' %}"></script>
+  </body>
+</html>

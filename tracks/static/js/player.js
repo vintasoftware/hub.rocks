@@ -7,23 +7,23 @@
       });
     };
 
-    var deleteNext = function (deezer_id) {
+    var deleteNext = function (service_id) {
       return $.ajax({
-        url: API_URL + '/tracks/' + deezer_id + '/',
+        url: API_URL + '/tracks/' + service_id + '/',
         type: 'DELETE'
       });
     };
 
-    var setNowPlaying = function (deezer_id) {
+    var setNowPlaying = function (service_id) {
       return $.ajax({
-        url: API_URL + '/tracks/' + deezer_id + '/now-playing/',
-        type: 'PUT'
+        url: API_URL + '/tracks/' + service_id + '/now-playing/',
+        type: 'POST'
       });
     };
 
-    var deleteNowPlaying = function (deezer_id) {
+    var deleteNowPlaying = function (service_id) {
       $.ajax({
-        url: API_URL + '/tracks/' + deezer_id + '/now-playing/',
+        url: API_URL + '/tracks/' + service_id + '/now-playing/',
         type: 'DELETE'
       });
     };
@@ -39,12 +39,12 @@
   var popNextAndPlay = function () {
     HubrocksAPI.getNext().done(function (json) {
       if (json.next) {
-        HubrocksAPI.setNowPlaying(json.next.deezer_id)
+        HubrocksAPI.setNowPlaying(json.next.service_id)
           .then(function () {
-            HubrocksAPI.deleteNext(json.next.deezer_id);
+            HubrocksAPI.deleteNext(json.next.service_id);
           });
 
-        DZ.player.playTracks([json.next.deezer_id]);
+        DZ.player.playTracks([json.next.service_id]);
       } else {
         console.log('no next, will try again...');
         fail();
