@@ -7,13 +7,6 @@
       });
     };
 
-    var deleteNext = function (service_id) {
-      return $.ajax({
-        url: API_URL + '/tracks/' + service_id + '/',
-        type: 'DELETE'
-      });
-    };
-
     var setNowPlaying = function (service_id) {
       return $.ajax({
         url: API_URL + '/tracks/' + service_id + '/now-playing/',
@@ -30,7 +23,6 @@
 
     return {
       getNext: getNext,
-      deleteNext: deleteNext,
       setNowPlaying: setNowPlaying,
       deleteNowPlaying: deleteNowPlaying
     };
@@ -39,10 +31,7 @@
   var popNextAndPlay = function () {
     HubrocksAPI.getNext().done(function (json) {
       if (json.next) {
-        HubrocksAPI.setNowPlaying(json.next.service_id)
-          .then(function () {
-            HubrocksAPI.deleteNext(json.next.service_id);
-          });
+        HubrocksAPI.setNowPlaying(json.next.service_id);
 
         DZ.player.playTracks([json.next.service_id]);
       } else {

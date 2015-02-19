@@ -7,7 +7,7 @@ from requests.exceptions import RequestException
 
 from tracks.serializers import (
     TrackSerializer, VoteSerializer)
-from tracks.models import Track, Vote, NowPlaying
+from tracks.models import Track, Vote
 
 
 class TrackListAPIView(generics.ListAPIView):
@@ -25,8 +25,8 @@ class TrackListAPIView(generics.ListAPIView):
         response.data['tracks'] = response_data
         try:
             response.data['now_playing'] = TrackSerializer(
-                NowPlaying.objects.get().track).data
-        except NowPlaying.DoesNotExist:
+                Track.objects.get(now_playing=True)).data
+        except Track.DoesNotExist:
              response.data['now_playing'] = None
 
         return response
@@ -90,16 +90,17 @@ class NowPlayingAPIView(DestroyModelMixin, generics.CreateAPIView):
             return Response(
                 status=status.HTTP_400_BAD_REQUEST)
 
-        if NowPlaying.objects.exists():
-            NowPlaying.objects.update(track_id=service_id)
-        else:
-            NowPlaying.objects.create(track_id=service_id)
+        Track.objects.update(now_playing=False)
+        (Track.objects.
+            filter(service_id=service_id).
+            update(now_playing=True))
 
         return Response(status=status.HTTP_200_OK)
 
     def get_object(self, *args, **kwargs):
-        return get_object_or_404(NowPlaying,
-            track=self.kwargs['service_id'])
+        return get_object_or_404(Track,
+            service_id=self.kwargs['service_id'],
+            now_playing=True)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
@@ -116,10 +117,3 @@ class NextTrackAPIView(generics.RetrieveAPIView):
             data = None
 
         return Response({'next': data})
-
-
-class TrackDeleteAPIView(generics.DestroyAPIView):
-
-    def get_object(self, *args, **kwargs):
-        return get_object_or_404(Track,
-            service_id=self.kwargs['service_id'])

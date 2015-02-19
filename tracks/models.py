@@ -10,6 +10,7 @@ class Track(TimeStampedModel):
     service_id = models.CharField(max_length=255, primary_key=True)
     title = models.CharField(max_length=255)
     artist = models.CharField(max_length=255)
+    now_playing = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _("Track")
@@ -23,6 +24,7 @@ class Track(TimeStampedModel):
     @classmethod
     def ordered_qs(cls):
         return (Track.objects.
+            filter(now_playing=False).
             annotate(votes_count=Count('votes')).
             order_by('-votes_count', 'modified'))
 
@@ -51,10 +53,3 @@ class Vote(TimeStampedModel):
     class Meta:
         verbose_name = _("Vote")
         unique_together = ('track', 'token')
-
-
-class NowPlaying(models.Model):
-    track = models.ForeignKey(Track)
-
-    class Meta:
-        verbose_name = _("Now playing")
