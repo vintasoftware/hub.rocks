@@ -7,22 +7,34 @@
       });
     };
 
+    var getNowPlaying = function () {
+      return $.ajax({
+        url: API_URL + '/tracks/now-playing/',
+        type: 'GET'
+      });
+    };
+
     var setNowPlaying = function (service_id) {
       return $.ajax({
-        url: API_URL + '/tracks/' + service_id + '/now-playing/',
-        type: 'POST'
+        url: API_URL + '/tracks/now-playing/',
+        type: 'PUT',
+        data: {
+          'service_id': service_id,
+          'now_playing': true
+        }
       });
     };
 
     var deleteNowPlaying = function (service_id) {
       $.ajax({
-        url: API_URL + '/tracks/' + service_id + '/now-playing/',
+        url: API_URL + '/tracks/now-playing/',
         type: 'DELETE'
       });
     };
 
     return {
       getNext: getNext,
+      getNowPlaying: getNowPlaying,
       setNowPlaying: setNowPlaying,
       deleteNowPlaying: deleteNowPlaying
     };
@@ -47,6 +59,14 @@
     }
   };
 
+  var tryToContinuePlaying = function () {
+    HubrocksAPI.getNowPlaying().done(function (now_playing) {
+      DZ.player.playTracks([now_playing.service_id]);
+    }).fail(function () {
+      popNextAndPlay();
+    });
+  };
+
   DZ.init({
       appId  : '8',
       channelUrl : 'http://developers.deezer.com/examples/channel.php',
@@ -63,7 +83,7 @@
               popNextAndPlay();
             });
             
-            popNextAndPlay();
+            tryToContinuePlaying();
           }
       }
   });  

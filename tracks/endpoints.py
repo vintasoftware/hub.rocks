@@ -1,12 +1,12 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import generics, status
-from rest_framework.mixins import DestroyModelMixin
+from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from requests.exceptions import RequestException
 
 from tracks.serializers import (
-    TrackSerializer, VoteSerializer)
+    TrackSerializer, VoteSerializer,
+    TrackUpdateSerializer)
 from tracks.models import Track, Vote
 
 
@@ -32,7 +32,7 @@ class TrackListAPIView(generics.ListAPIView):
         return response
 
 
-class VoteAPIView(DestroyModelMixin, generics.CreateAPIView):
+class VoteAPIView(mixins.DestroyModelMixin, generics.CreateAPIView):
     serializer_class = VoteSerializer
 
     def get_token(self):
@@ -80,30 +80,19 @@ class VoteAPIView(DestroyModelMixin, generics.CreateAPIView):
         return self.destroy(request, *args, **kwargs)
 
 
-class NowPlayingAPIView(DestroyModelMixin, generics.CreateAPIView):
-
-    def create(self, request, *args, **kwargs):
-        service_id = self.kwargs['service_id']
-
-        if not Track.objects.filter(
-            service_id=service_id).exists():
-            return Response(
-                status=status.HTTP_400_BAD_REQUEST)
-
-        Track.objects.update(now_playing=False)
-        (Track.objects.
-            filter(service_id=service_id).
-            update(now_playing=True))
-
-        return Response(status=status.HTTP_200_OK)
+class NowPlayingAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TrackUpdateSerializer
 
     def get_object(self, *args, **kwargs):
-        return get_object_or_404(Track,
-            service_id=self.kwargs['service_id'],
-            now_playing=True)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+        if self.request.method == 'PUT':
+            if 'service_id' in self.request.DATA:
+                return get_object_or_404(Track,
+                    service_id=self.request.DATA['service_id'])
+            else:
+                return Response(
+                    status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return get_object_or_404(Track, now_playing=True)
 
 
 class NextTrackAPIView(generics.RetrieveAPIView):

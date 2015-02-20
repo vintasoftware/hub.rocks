@@ -20,3 +20,10 @@ class VoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vote
         fields = ('track', 'token',)
+
+
+class TrackUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Track
+        fields = ('service_id', 'now_playing')
