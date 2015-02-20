@@ -8,6 +8,7 @@ from tracks.serializers import (
     TrackSerializer, VoteSerializer,
     TrackUpdateSerializer)
 from tracks.models import Track, Vote
+from core.mixins import PusherMixin
 
 
 class TrackListAPIView(generics.ListAPIView):
@@ -32,8 +33,10 @@ class TrackListAPIView(generics.ListAPIView):
         return response
 
 
-class VoteAPIView(mixins.DestroyModelMixin, generics.CreateAPIView):
+class VoteAPIView(PusherMixin, mixins.DestroyModelMixin, generics.CreateAPIView):
     serializer_class = VoteSerializer
+    pusher_channel = 'tracks'
+    pusher_event = 'updated'
 
     def get_token(self):
         auth_header = self.request.META.get('HTTP_AUTHORIZATION', '')
@@ -80,8 +83,10 @@ class VoteAPIView(mixins.DestroyModelMixin, generics.CreateAPIView):
         return self.destroy(request, *args, **kwargs)
 
 
-class NowPlayingAPIView(generics.RetrieveUpdateDestroyAPIView):
+class NowPlayingAPIView(PusherMixin, generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TrackUpdateSerializer
+    pusher_channel = 'tracks'
+    pusher_event = 'updated'
 
     def get_object(self, *args, **kwargs):
         if self.request.method == 'PUT':

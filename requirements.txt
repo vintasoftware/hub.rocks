@@ -12,6 +12,7 @@ djangorestframework==3.0.5
 gunicorn==19.2.1
 libsass==0.6.2
 psycopg2==2.6
+pusher==0.8
 python-dateutil==2.4.0
 python-decouple==2.3
 pytz==2014.10
