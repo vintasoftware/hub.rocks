@@ -1,4 +1,4 @@
-# lotebox-django
+# hub.rocks
 
 ## Dependencies
 * Python 2.7
