@@ -4,6 +4,7 @@ dj-database-url==0.3.0
 Django==1.7.4
 django-appconf==1.0.1
 django-bower==5.0.2
+django-braces==1.4.0
 django-compressor==1.4
 django-libsass==0.2
 django-model-utils==2.2
