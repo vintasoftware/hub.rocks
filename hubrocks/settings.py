@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
 import os
+import re
 from decouple import config, Csv
 import dj_database_url
 
@@ -91,6 +92,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 ROOT_URLCONF = 'hubrocks.urls'
 
 WSGI_APPLICATION = 'hubrocks.wsgi.application'
+
+IGNORABLE_404_URLS = (
+    re.compile(r'^/api/.+$'),
+)
 
 
 # Database
