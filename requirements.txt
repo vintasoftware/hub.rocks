@@ -9,6 +9,7 @@ django-libsass==0.2
 django-model-utils==2.2
 django-storages-redux==1.2.2
 djangorestframework==3.0.5
+gunicorn==19.2.1
 libsass==0.6.2
 psycopg2==2.6
 python-dateutil==2.4.0
