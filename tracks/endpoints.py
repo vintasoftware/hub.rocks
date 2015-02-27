@@ -79,6 +79,14 @@ class VoteAPIView(PusherMixin, mixins.DestroyModelMixin, generics.CreateAPIView)
             track=self.kwargs['service_id'],
             token=self.get_token())
 
+    def perform_destroy(self, instance):
+        super(VoteAPIView, self).perform_destroy(instance)
+
+        if Vote.objects.filter(
+            track=instance.track).count() == 0:
+            # if track has no other votes, delete it
+            instance.track.delete()
+
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
