@@ -11,6 +11,13 @@ $(document).ready(function () {
   }
 
   $('.select-track').selectize({
+    plugins: ['enter_key_submit'],
+    onInitialize: function (foo) {
+      this.on('submit', function () {
+        this.$input.closest('form').submit();
+      }, this);
+    },
+
     valueField: 'id',
     labelField: 'title',
     searchField: ['title', 'artist'],

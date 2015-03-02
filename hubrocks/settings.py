@@ -58,6 +58,7 @@ INSTALLED_APPS = (
 BOWER_INSTALLED_APPS = (
     'bootstrap-sass-official#3.3.3',
     'selectize#0.11.2',
+    'https://github.com/wayneashleyberry/selectize-enter-key-submit.git',
     'jquery#2.1.3',
     'angular#1.3.13',
     'https://github.com/grevory/angular-local-storage.git#0.1.5',

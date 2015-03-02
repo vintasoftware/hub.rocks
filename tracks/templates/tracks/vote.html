@@ -47,12 +47,13 @@
           </tr>
         </table>
         
-        <form role="form">
+        <form role="form" ng-submit="insertTrack()" action="#">
           <div class="form-group">
             <select class="form-control select-track" placeholder="Digite o nome de uma música..."
-                      ng-model="newTrack"></select>
+                    ng-model="newTrack"
+                    ng-enter="insertTrack()"></select>
             <button class="btn btn-success pull-right"
-                    ng-click="insertTrack()">Inserir</button>
+                    type="submit">Inserir</button>
           </div>
         </form>
 
@@ -68,6 +69,7 @@
     <script type="text/javascript" src="{% static 'angular-uuid4/angular-uuid4.js' %}"></script>
     <script type="text/javascript" src="{% static 'bootstrap-sass-official/assets/javascripts/bootstrap.js' %}"></script>
     <script type="text/javascript" src="{% static 'selectize/dist/js/standalone/selectize.js' %}"></script>
+    <script type="text/javascript" src="{% static 'selectize-enter-key-submit/src/plugin.js' %}"></script>
     <script type="text/javascript" src="{% static 'pusher/dist/pusher.js' %}"></script>
     <script type="text/javascript" src="{% static 'pusher-angular/lib/pusher-angular.js' %}"></script>
 
