@@ -1,4 +1,8 @@
+
+from random import randint
+
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
@@ -28,7 +32,7 @@ class TrackListAPIView(generics.ListAPIView):
             response.data['now_playing'] = TrackSerializer(
                 Track.objects.get(now_playing=True)).data
         except Track.DoesNotExist:
-             response.data['now_playing'] = None
+            response.data['now_playing'] = None
 
         return response
 
@@ -84,8 +88,9 @@ class VoteAPIView(PusherMixin, mixins.DestroyModelMixin, generics.CreateAPIView)
 
         if Vote.objects.filter(
             track=instance.track).count() == 0:
-            # if track has no other votes, delete it
-            instance.track.delete()
+            # if track has no other votes, remove it from the list
+            instance.track.on_queue = False
+            instance.track.save()
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
@@ -108,6 +113,12 @@ class NowPlayingAPIView(PusherMixin, generics.RetrieveUpdateDestroyAPIView):
         else:
             return get_object_or_404(Track, now_playing=True)
 
+    def perform_destroy(self, instance):
+        instance.on_queue = False
+        instance.now_playing = False
+        instance.save()
+        Vote.objects.filter(track=instance).delete()
+
 
 class NextTrackAPIView(generics.RetrieveAPIView):
 
@@ -117,6 +128,31 @@ class NextTrackAPIView(generics.RetrieveAPIView):
         if qs.exists():
             data = TrackSerializer(qs[0]).data
         else:
-            data = None
+            # select a track at random
+            last = Track.objects.filter(now_playing=False,
+                                        on_queue=False).count() - 1
+            if last >= 0:
+                index = randint(0, last)
+                try:
+                    track = Track.objects.filter(now_playing=False,
+                                                 on_queue=False).annotate(
+                                                 votes_count=Count('votes')
+                                                 )[index]
+                    data = TrackSerializer(track).data
+                except IndexError:
+                    # on the very unlikely event of selecting an index that
+                    # disappeared between the two queries we try selecting the
+                    # first one.
+                    try:
+                        print "trying again", track.title
+                        track = Track.objects.filter(now_playing=False,
+                                                     on_queue=False).annotate(
+                                                     votes_count=Count('votes')
+                                                     )[0]
+                        data = TrackSerializer(track).data
+                    except IndexError:
+                        data = None
+            else:
+                data = None
 
         return Response({'next': data})
