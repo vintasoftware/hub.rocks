@@ -98,7 +98,8 @@ class NowPlayingAPIView(PusherMixin, generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self, *args, **kwargs):
         if self.request.method == 'PUT':
-            if 'service_id' in self.request.DATA:
+            if ('service_id' in self.request.DATA and
+                not Track.objects.filter(now_playing=True).exists()):
                 return get_object_or_404(Track,
                     service_id=self.request.DATA['service_id'])
             else:

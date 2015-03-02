@@ -26,7 +26,7 @@
     };
 
     var deleteNowPlaying = function (service_id) {
-      $.ajax({
+      return $.ajax({
         url: API_URL + '/tracks/now-playing/',
         type: 'DELETE'
       });
@@ -67,6 +67,10 @@
     });
   };
 
+  var deleteNowPlaying = function (track_id) {
+    return HubrocksAPI.deleteNowPlaying(track_id);
+  };
+
   DZ.init({
       appId  : '8',
       channelUrl : 'http://developers.deezer.com/examples/channel.php',
@@ -77,13 +81,15 @@
           width : 650,
           height : 300,
           onload : function () {
+            tryToContinuePlaying();
+
             DZ.Event.subscribe('track_end', function (currentIndex) {
               var track = DZ.player.getCurrentTrack();
-              HubrocksAPI.deleteNowPlaying(track.id);
-              popNextAndPlay();
+              
+              deleteNowPlaying(track.id).done(function () {
+                popNextAndPlay();
+              })
             });
-            
-            tryToContinuePlaying();
           }
       }
   });  
