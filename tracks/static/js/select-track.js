@@ -10,6 +10,10 @@ $(document).ready(function () {
     });
   }
 
+  $('.vote-form').on('submit', function () {
+    return false
+  });
+
   $('.select-track').selectize({
     plugins: ['enter_key_submit'],
     onInitialize: function (foo) {
