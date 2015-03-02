@@ -4,7 +4,8 @@ $(document).ready(function () {
       return {
         id: t.id,
         title: t.title,
-        artist: t.artist.name
+        artist: t.artist.name,
+        cover: t.album.cover
       };
     });
   }
@@ -33,11 +34,12 @@ $(document).ready(function () {
     },
     render: {
       option: function(track, escape) {
-        return '<div>' +
-          '<span class="title">' +
+        return '<div class="track-option">' +
+          '<img src="' + track.cover  + '" >' +
+          '<div class="title">' +
             '<span class="name">' + escape(track.title) + '</span>' +
             '<span class="by">' + escape(track.artist) + '</span>' +
-          '</span>' +
+          '</div>' +
         '</div>';
       }
     },
