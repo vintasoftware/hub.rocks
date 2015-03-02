@@ -11,7 +11,9 @@ $(document).ready(function () {
   }
 
   $('.vote-form').on('submit', function () {
-    return false
+    // necessary to prevent submit with 
+    // selectize custom submit
+    return false;
   });
 
   $('.select-track').selectize({
