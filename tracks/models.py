@@ -37,11 +37,12 @@ class Track(TimeStampedModel):
         if response.status_code == 200:
             response_json = response.json()
             if 'error' not in response_json:
-                return Track.objects.get_or_create(
+                track, __  = Track.objects.update_or_create(
                     defaults={'on_queue': True},
                     service_id=service_id,
                     title=response_json['title'],
                     artist=response_json['artist']['name'])
+                return track
             else:
                 raise ValueError("Deezer error")
         else:
