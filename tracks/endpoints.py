@@ -64,16 +64,14 @@ class VoteAPIView(PusherMixin, mixins.DestroyModelMixin, generics.CreateAPIView)
     def create(self, request, *args, **kwargs):
         service_id = self.kwargs['service_id']
 
-        if not Track.objects.filter(
-            service_id=service_id).exists():
-            try:
-                Track.fetch_and_save_track(service_id)
-            except RequestException:
-                return Response(
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE)
-            except ValueError:
-                return Response(
-                    status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Track.fetch_and_save_track(service_id)
+        except RequestException:
+            return Response(
+                status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except ValueError:
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST)
 
         return super(VoteAPIView,
             self).create(request, *args, **kwargs)
