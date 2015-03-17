@@ -22,7 +22,7 @@
     };
 
     var deleteNowPlaying = function (deezer_id) {
-      $.ajax({
+      return $.ajax({
         url: API_URL + '/tracks/' + deezer_id + '/now-playing/',
         type: 'DELETE'
       });
@@ -70,8 +70,9 @@
           onload : function () {
             DZ.Event.subscribe('track_end', function (currentIndex) {
               var track = DZ.player.getCurrentTrack();
-              HubrocksAPI.deleteNowPlaying(track.id);
-              popNextAndPlay();
+              HubrocksAPI.deleteNowPlaying(track.id).done(function () {
+                popNextAndPlay();
+              });
             });
             
             popNextAndPlay();

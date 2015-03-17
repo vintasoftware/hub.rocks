@@ -1,31 +1,45 @@
 $(document).ready(function () {
+  function transformTracksJson(tracks) {
+    return $.map(tracks, function (t) {
+      return {
+        id: t.id,
+        title: t.title,
+        artist: t.artist.name,
+        cover: t.album.cover
+      };
+    });
+  }
+
   $('.select-track').selectize({
     valueField: 'id',
     labelField: 'title',
-    searchField: ['title'],
+    searchField: ['title', 'artist'],
     options: [],
     create: false,
     load: function(query, callback) {
       if (!query.length) return callback();
 
       $.ajax({
-        url: 'http://api.deezer.com/search/track?output=jsonp&q=' + encodeURIComponent(query),
+        url: 'http://api.deezer.com/search/track?output=jsonp&q='
+          + encodeURIComponent(query),
         dataType: 'jsonp',
         error: function() {
           callback();
         },
         success: function (json) {
-          callback(json.data.slice(0, 10));
+          callback(
+            transformTracksJson(json.data.slice(0, 15)));
         }
       });
     },
     render: {
       option: function(track, escape) {
-        return '<div>' +
-          '<span class="title">' +
+        return '<div class="track-option">' +
+          '<img src="' + track.cover  + '" >' +
+          '<div class="title">' +
             '<span class="name">' + escape(track.title) + '</span>' +
-            '<span class="by">' + escape(track.artist.name) + '</span>' +
-          '</span>' +
+            '<span class="by">' + escape(track.artist) + '</span>' +
+          '</div>' +
         '</div>';
       }
     },
