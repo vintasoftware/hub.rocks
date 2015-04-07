@@ -1,30 +1,23 @@
 from django.conf import settings
 
-from pusher import pusher_from_url
-
-try:
-    pusher = pusher_from_url()
-except KeyError:
-    pusher = None
+import django_fanout as fanout
 
 
-class PusherMixin(object):
-    pusher_channel = None
-    pusher_event = None
+class FanOutMixin(object):
+    fanout_channel = None
+    fanout_data = None
 
     def dispatch(self, request, *args, **kwargs):
-        response = super(PusherMixin,
-            self).dispatch(request, *args, **kwargs)
+        response = super(FanOutMixin, self).dispatch(request, *args, **kwargs)
 
         if (200 <= response.status_code < 300 and
-            request.method in ['POST', 'PUT', 'DELETE']):
-            if not settings.LOCAL:
-                pusher[self.pusher_channel].trigger(
-                    self.pusher_event)
+                request.method in ['POST', 'PUT', 'DELETE']):
+            if settings.FANOUT_REALM and settings.FANOUT_KEY:
+                fanout.publish(self.fanout_channel, self.fanout_data)
             else:
                 print ('Sending push to channel {}, '
-                       'event {}').format(
-                            self.pusher_channel,
-                            self.pusher_event)
+                       'data {}').format(
+                            self.fanout_channel,
+                            self.fanout_data)
 
         return response

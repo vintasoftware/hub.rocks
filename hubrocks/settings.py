@@ -63,8 +63,8 @@ BOWER_INSTALLED_APPS = (
     'angular#1.3.13',
     'https://github.com/grevory/angular-local-storage.git#0.1.5',
     'https://github.com/monicao/angular-uuid4.git#v0.2.0',
-    'pusher#2.2.4',
-    'pusher-angular#0.1.4',
+    'faye#1.1.0',
+    'angular-faye#0.2.2',
 )
 BOWER_COMPONENTS_ROOT = base_dir_join('components')
 
@@ -89,7 +89,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
 
-    'core.context_processors.pusher_api_key',
+    'core.context_processors.fanout_realm',
 )
 
 ROOT_URLCONF = 'hubrocks.urls'
@@ -250,3 +250,6 @@ LOGGING = {
         }
     }
 }
+
+FANOUT_REALM = config('FANOUT_REALM', default=None)
+FANOUT_KEY = config('FANOUT_KEY', default=None)

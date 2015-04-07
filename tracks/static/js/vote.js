@@ -1,6 +1,6 @@
 (function () {
   var app = angular.module('hubrocks', [
-    'LocalStorageModule', 'uuid4', 'pusher-angular', 'hubrocks.const']);
+    'LocalStorageModule', 'uuid4', 'hubrocks.const', 'faye']);
 
   app.factory('my_uuid', ['localStorageService', 'uuid4',
     function (localStorageService, uuid4) {
@@ -14,9 +14,16 @@
     }
   ]);
 
-  app.factory('HubrocksAPI', ['API_URL', 'PUSHER_API_KEY', 'my_uuid', '$http', '$pusher',
-    function (API_URL, PUSHER_API_KEY, my_uuid, $http, $pusher) {
+  app.factory('Faye', ['$faye', 'FANOUT_REALM',
+    function($faye, FANOUT_REALM) {
+      return $faye('http://' + FANOUT_REALM + '.fanoutcdn.com/bayeux');
+    }
+  ]);
+
+  app.factory('HubrocksAPI', ['API_URL', 'my_uuid', '$http', 'Faye',
+    function (API_URL, my_uuid, $http, Faye) {
       $http.defaults.headers.common.Authorization = 'Token ' + my_uuid;
+
       var data = {
         'my_uuid': my_uuid
       };
@@ -29,10 +36,9 @@
       };
       fetchTracks();
 
-      var pusher = $pusher(new Pusher(PUSHER_API_KEY));
-      pusher.subscribe('tracks');
-      pusher.bind('updated', function () {
-        fetchTracks();
+      Faye.subscribe('/tracks', function (data) {
+        if (data === 'updated')
+          fetchTracks();
       });
 
       var insertVote = function (service_id) {

@@ -70,8 +70,8 @@
     <script type="text/javascript" src="{% static 'bootstrap-sass-official/assets/javascripts/bootstrap.js' %}"></script>
     <script type="text/javascript" src="{% static 'selectize/dist/js/standalone/selectize.js' %}"></script>
     <script type="text/javascript" src="{% static 'selectize-enter-key-submit/src/plugin.js' %}"></script>
-    <script type="text/javascript" src="{% static 'pusher/dist/pusher.js' %}"></script>
-    <script type="text/javascript" src="{% static 'pusher-angular/lib/pusher-angular.js' %}"></script>
+    <script type="text/javascript" src="{% static 'faye/include.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'angular-faye/build/angular-faye.js' %}"></script>
 
     <script>
       var app = angular.module('hubrocks.const', []);
@@ -80,8 +80,8 @@
         return 'api';
       });
 
-      app.factory('PUSHER_API_KEY', function () {
-        return '{{ PUSHER_API_KEY }}';
+      app.factory('FANOUT_REALM', function () {
+        return '{{ FANOUT_REALM }}';
       });
     </script>
 

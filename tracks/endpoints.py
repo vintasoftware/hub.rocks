@@ -12,7 +12,7 @@ from tracks.serializers import (
     TrackSerializer, VoteSerializer,
     TrackUpdateSerializer)
 from tracks.models import Track, Vote
-from core.mixins import PusherMixin
+from core.mixins import FanOutMixin
 
 
 class TrackListAPIView(generics.ListAPIView):
@@ -37,10 +37,11 @@ class TrackListAPIView(generics.ListAPIView):
         return response
 
 
-class VoteAPIView(PusherMixin, mixins.DestroyModelMixin, generics.CreateAPIView):
+class VoteAPIView(FanOutMixin, mixins.DestroyModelMixin,
+                  generics.CreateAPIView):
     serializer_class = VoteSerializer
-    pusher_channel = 'tracks'
-    pusher_event = 'updated'
+    fanout_channel = 'tracks'
+    fanout_data = 'updated'
 
     def get_token(self):
         auth_header = self.request.META.get('HTTP_AUTHORIZATION', '')
@@ -56,8 +57,10 @@ class VoteAPIView(PusherMixin, mixins.DestroyModelMixin, generics.CreateAPIView)
     def get_serializer(self, *args, **kwargs):
         kwargs['data'] = {}
         kwargs['data']['token'] = self.get_token()
-        kwargs['data']['track'] = self.kwargs['service_id']
-        
+
+        kwargs['data']['track'] = Track.objects.get(
+            service_id=self.kwargs['service_id']).pk
+
         return super(VoteAPIView,
             self).get_serializer(*args, **kwargs)
 
@@ -69,7 +72,7 @@ class VoteAPIView(PusherMixin, mixins.DestroyModelMixin, generics.CreateAPIView)
         except RequestException:
             return Response(
                 status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        except ValueError:
+        except ValueError as e:
             return Response(
                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -77,8 +80,9 @@ class VoteAPIView(PusherMixin, mixins.DestroyModelMixin, generics.CreateAPIView)
             self).create(request, *args, **kwargs)
 
     def get_object(self, *args, **kwargs):
-        return get_object_or_404(Vote,
-            track=self.kwargs['service_id'],
+        return get_object_or_404(
+            Vote,
+            track__service_id=self.kwargs['service_id'],
             token=self.get_token())
 
     def perform_destroy(self, instance):
@@ -94,10 +98,10 @@ class VoteAPIView(PusherMixin, mixins.DestroyModelMixin, generics.CreateAPIView)
         return self.destroy(request, *args, **kwargs)
 
 
-class NowPlayingAPIView(PusherMixin, generics.RetrieveUpdateDestroyAPIView):
+class NowPlayingAPIView(FanOutMixin, generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TrackUpdateSerializer
-    pusher_channel = 'tracks'
-    pusher_event = 'updated'
+    fanout_channel = 'tracks'
+    fanout_data = 'updated'
 
     def get_object(self, *args, **kwargs):
         if self.request.method == 'PUT':
