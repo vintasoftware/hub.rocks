@@ -67,14 +67,15 @@ class VoteAPIView(FanOutMixin, mixins.DestroyModelMixin,
     def create(self, request, *args, **kwargs):
         service_id = self.kwargs['service_id']
 
-        try:
-            Track.fetch_and_save_track(service_id)
-        except RequestException:
-            return Response(
-                status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        except ValueError as e:
-            return Response(
-                status=status.HTTP_400_BAD_REQUEST)
+        if not Track.objects.filter(service_id=service_id).exists():
+            try:
+                Track.fetch_and_save_track(service_id)
+            except RequestException:
+                return Response(
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            except ValueError as e:
+                return Response(
+                    status=status.HTTP_400_BAD_REQUEST)
 
         return super(VoteAPIView,
             self).create(request, *args, **kwargs)
@@ -84,15 +85,6 @@ class VoteAPIView(FanOutMixin, mixins.DestroyModelMixin,
             Vote,
             track__service_id=self.kwargs['service_id'],
             token=self.get_token())
-
-    def perform_destroy(self, instance):
-        super(VoteAPIView, self).perform_destroy(instance)
-
-        if Vote.objects.filter(
-            track=instance.track).count() == 0:
-            # if track has no other votes, remove it from the list
-            instance.track.on_queue = False
-            instance.track.save()
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
@@ -116,7 +108,6 @@ class NowPlayingAPIView(FanOutMixin, generics.RetrieveUpdateDestroyAPIView):
             return get_object_or_404(Track, now_playing=True)
 
     def perform_destroy(self, instance):
-        instance.on_queue = False
         instance.now_playing = False
         instance.save()
         Vote.objects.filter(track=instance).delete()
@@ -125,32 +116,27 @@ class NowPlayingAPIView(FanOutMixin, generics.RetrieveUpdateDestroyAPIView):
 class NextTrackAPIView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
-        qs = Track.ordered_qs()    
+        qs = Track.ordered_qs()
         
         if qs.exists():
             data = TrackSerializer(qs[0]).data
         else:
             # select a track at random
             last = Track.objects.filter(now_playing=False,
-                                        on_queue=False).count() - 1
+                                        votes__isnull=True).count() - 1
             if last >= 0:
                 index = randint(0, last)
                 try:
                     track = Track.objects.filter(now_playing=False,
-                                                 on_queue=False).annotate(
-                                                 votes_count=Count('votes')
-                                                 )[index]
+                                                 votes__isnull=True)[index]
                     data = TrackSerializer(track).data
                 except IndexError:
                     # on the very unlikely event of selecting an index that
                     # disappeared between the two queries we try selecting the
                     # first one.
                     try:
-                        print "trying again", track.title
                         track = Track.objects.filter(now_playing=False,
-                                                     on_queue=False).annotate(
-                                                     votes_count=Count('votes')
-                                                     )[0]
+                                                     votes__isnull=True)[0]
                         data = TrackSerializer(track).data
                     except IndexError:
                         data = None
