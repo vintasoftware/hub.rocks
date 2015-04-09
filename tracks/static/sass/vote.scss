@@ -59,3 +59,5 @@ footer {
 .selectize-control.select-track.loading::before {
   opacity: 0.4;
 }
+
+[ng\:cloak], [ng-cloak], .ng-cloak { display: none; }

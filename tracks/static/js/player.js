@@ -1,9 +1,10 @@
 (function () {
   var HubrocksAPI = (function () {
-    var getNext = function () {
+
+    var skipTrack = function () {
       return $.ajax({
-        url: API_URL + '/tracks/next/',
-        type: 'GET'
+        url: API_URL + '/tracks/now-playing/skip/',
+        type: 'POST',
       });
     };
 
@@ -14,50 +15,46 @@
       });
     };
 
-    var setNowPlaying = function (service_id) {
-      return $.ajax({
-        url: API_URL + '/tracks/now-playing/',
-        type: 'PUT',
-        data: {
-          'service_id': service_id,
-          'now_playing': true
-        }
-      });
-    };
-
-    var deleteNowPlaying = function (service_id) {
-      return $.ajax({
-        url: API_URL + '/tracks/now-playing/',
-        type: 'DELETE'
-      });
-    };
-
     return {
-      getNext: getNext,
+      skipTrack: skipTrack,
       getNowPlaying: getNowPlaying,
-      setNowPlaying: setNowPlaying,
-      deleteNowPlaying: deleteNowPlaying
     };
   }());
 
   var popNextAndPlay = function () {
-    HubrocksAPI.getNext().done(function (json) {
-      if (json.next) {
-        HubrocksAPI.setNowPlaying(json.next.service_id);
 
-        DZ.player.playTracks([json.next.service_id]);
-      } else {
-        console.log('no next, will try again...');
-        fail();
+    HubrocksAPI.skipTrack().done(function () {
+      console.log('skipping');
+      tryNowPlaying();
+    }).fail(getFailFunction(popNextAndPlay));
+
+    function tryNowPlaying() {
+      HubrocksAPI.getNowPlaying().done(function (now_playing) {
+        DZ.player.playTracks([now_playing.service_id]);
+      }).fail(function(error) {
+        if (error.status === 404) {
+          // no track to play next try popping again
+          console.log('no next, will try again...');
+          getFailFunction(popNextAndPlay)();
+        } else {
+          // something went wrong with nowPlaying try it again
+          console.log(error);
+          getFailFunction(tryNowPlaying)();
+        }
+      });
+    }
+
+    function getFailFunction(func) {
+      function fail() {
+        setTimeout(function () {
+          console.log('retrying');
+          func();
+        }, 3000);
       }
-    }).fail(fail);
-
-    function fail() {
-      setTimeout(function () {
-        popNextAndPlay();
-      }, 3000);
+      return fail;
     }
   };
+
 
   var tryToContinuePlaying = function () {
     HubrocksAPI.getNowPlaying().done(function (now_playing) {
@@ -67,9 +64,22 @@
     });
   };
 
-  var deleteNowPlaying = function (track_id) {
-    return HubrocksAPI.deleteNowPlaying(track_id);
+  var skipTrack = function () {
+    return HubrocksAPI.skipTrack();
   };
+
+  var faye_client = new Faye.Client(
+    'http://' + FANOUT_REALM + '.fanoutcdn.com/bayeux'
+  );
+
+  faye_client.subscribe('/player', function (data) {
+    console.log('got data: ', data);
+    if (data.service_id) {
+      DZ.player.playTracks([data.service_id]);
+    } else {
+      popNextAndPlay();
+    }
+  });
 
   DZ.init({
       appId  : '8',
@@ -84,11 +94,7 @@
             tryToContinuePlaying();
 
             DZ.Event.subscribe('track_end', function (currentIndex) {
-              var track = DZ.player.getCurrentTrack();
-              
-              deleteNowPlaying(track.id).done(function () {
-                popNextAndPlay();
-              })
+              skipTrack();
             });
           }
       }

@@ -36,9 +36,8 @@
       };
       fetchTracks();
 
-      Faye.subscribe('/tracks', function (data) {
-        if (data === 'updated')
-          fetchTracks();
+      Faye.subscribe('/tracks', function (newData) {
+        angular.extend(data, newData);
       });
 
       var insertVote = function (service_id) {
@@ -49,10 +48,15 @@
         $http.delete(API_URL + '/tracks/' + service_id + '/vote/');
       };
 
+      var voteSkip = function() {
+        $http.post(API_URL + '/tracks/now-playing/voteskip/');
+      };
+
       return {
         data: data,
         insertVote: insertVote,
         deleteVote: deleteVote,
+        voteSkip: voteSkip,
       };
     }
   ]);
@@ -62,6 +66,7 @@
       $scope.data = HubrocksAPI.data;
       $scope.insertVote = HubrocksAPI.insertVote;
       $scope.deleteVote = HubrocksAPI.deleteVote;
+      $scope.voteSkip = HubrocksAPI.voteSkip;
 
       $scope.insertTrack = function () {
         if ($scope.newTrack) {

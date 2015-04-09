@@ -50,6 +50,13 @@ class Vote(TimeStampedModel):
     track = models.ForeignKey(Track, related_name='votes')
     token = models.CharField(max_length=255)
 
+    # This field is used to cancel a vote. Votes can be cancelled by anyone
+    # that clicks on skip. When there is no vote left to be cancelled and
+    # a skip request is made, the song will be skipped.
+    # The result is that when votes + 1 skip requests are made the track
+    # will be skipped.
+    skip_request_by = models.CharField(max_length=255, blank=True, default='')
+
     class Meta:
         verbose_name = _("Vote")
         unique_together = ('track', 'token')
