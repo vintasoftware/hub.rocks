@@ -16,6 +16,8 @@
 
   app.factory('Faye', ['$faye', 'FANOUT_REALM',
     function($faye, FANOUT_REALM) {
+      if (!FANOUT_REALM)
+        return null;
       return $faye('http://' + FANOUT_REALM + '.fanoutcdn.com/bayeux');
     }
   ]);
@@ -36,12 +38,16 @@
       };
       fetchTracks();
 
-      Faye.subscribe('/tracks', function (newData) {
-        angular.extend(data, newData);
-      });
+      if (Faye) {
+        Faye.subscribe('/tracks', function (newData) {
+          angular.extend(data, newData);
+        });
+      } else {
+        console.log("Running without Faye");
+      }
 
       var insertVote = function (service_id) {
-        $http.post(API_URL + '/tracks/' + service_id + '/vote/');
+        return $http.post(API_URL + '/tracks/' + service_id + '/vote/');
       };
 
       var deleteVote = function (service_id) {

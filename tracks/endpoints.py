@@ -67,7 +67,7 @@ class VoteAPIView(BroadCastTrackChangeMixin,
                     status=status.HTTP_503_SERVICE_UNAVAILABLE)
             except ValueError as e:
                 return Response(
-                    status=status.HTTP_400_BAD_REQUEST)
+                    status=status.HTTP_400_BAD_REQUEST, data=e.message)
 
         return super(VoteAPIView,
             self).create(request, *args, **kwargs)

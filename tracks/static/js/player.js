@@ -68,18 +68,25 @@
     return HubrocksAPI.skipTrack();
   };
 
-  var faye_client = new Faye.Client(
-    'http://' + FANOUT_REALM + '.fanoutcdn.com/bayeux'
-  );
+  var faye_client = null;
+  if (FANOUT_REALM) {
+    faye_client = new Faye.Client(
+      'http://' + FANOUT_REALM + '.fanoutcdn.com/bayeux'
+    );
+  }
 
-  faye_client.subscribe('/player', function (data) {
-    console.log('got data: ', data);
-    if (data.service_id) {
-      DZ.player.playTracks([data.service_id]);
-    } else {
-      popNextAndPlay();
-    }
-  });
+  if (FANOUT_REALM) {
+    faye_client.subscribe('/player', function (data) {
+      console.log('got data: ', data);
+      if (data.service_id) {
+        DZ.player.playTracks([data.service_id]);
+      } else {
+        popNextAndPlay();
+      }
+    });
+  } else {
+    console.log("Running without Faye");
+  }
 
   DZ.init({
       appId  : '8',

@@ -2,6 +2,7 @@ from collections import namedtuple
 from random import randint
 
 from django.db import transaction
+from django.conf import settings
 
 import django_fanout
 
@@ -38,11 +39,18 @@ class SerializeTrackListMixin(object):
 
 class BroadCastTrackChangeMixin(SerializeTrackListMixin):
 
+    def publish(self, channel, data):
+        if settings.FANOUT_REALM and settings.FANOUT_KEY:
+            django_fanout.publish(channel, data)
+        else:
+            print "Fanout not setup, would push {} to /{}".format(
+                data, channel)
+
     def broadcast_list_changed(self):
-        django_fanout.publish('tracks', self.track_list_serialize().data)
+        self.publish('tracks', self.track_list_serialize().data)
 
     def broadcast_track_changed(self, track):
-        django_fanout.publish('player', TrackSerializer(track).data)
+        self.publish('player', TrackSerializer(track).data)
         self.broadcast_list_changed()
 
 
