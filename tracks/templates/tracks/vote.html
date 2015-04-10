@@ -32,7 +32,7 @@
                         ng-class="{disabled: data.now_playing.skippers.indexOf(data.my_uuid) !== -1,
                                    'btn-danger': data.now_playing.skippers.length > 0,
                                    'btn-info': data.now_playing.skippers.length === 0}"
-                        ng-click="voteSkip(data.now_playing.id)">
+                        ng-click="voteSkip(data.now_playing.service_id)">
                   <ng-pluralize count="data.now_playing.left_to_skip"
                                 when="{'1': 'falta 1 skip',
                                        'other': 'faltam {} skips'}">

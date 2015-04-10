@@ -18,7 +18,9 @@ class VoteSkipNowPlaying(SkipTrackMixin, GetTokenMixin,
 
     def post(self, request, *args, **kwargs):
         token = self.get_token()
-        track = get_object_or_404(Track, now_playing=True)
+        service_id = request.data.get('service_id')
+        track = get_object_or_404(Track, service_id=service_id,
+                                  now_playing=True)
 
         if token and not track.votes.filter(skip_request_by=token).exists():
             vote = Vote.objects.filter(track=track, skip_request_by='').first()

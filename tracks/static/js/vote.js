@@ -54,8 +54,9 @@
         $http.delete(API_URL + '/tracks/' + service_id + '/vote/');
       };
 
-      var voteSkip = function() {
-        $http.post(API_URL + '/tracks/now-playing/voteskip/');
+      var voteSkip = function(service_id) {
+        $http.post(API_URL + '/tracks/now-playing/voteskip/',
+                   {'service_id': service_id});
       };
 
       return {
