@@ -54,7 +54,7 @@
             <td>{{ track.votes.length }}</td>
           </tr>
         </table>
-        
+
         <form role="form" ng-submit="insertTrack()" class="vote-form">
           <div class="form-group">
             <select class="form-control select-track" placeholder="Digite o nome de uma música..."
@@ -65,6 +65,9 @@
           </div>
         </form>
 
+        {% endverbatim %}
+        <a href="http://adolargangorra.blogspot.com.br/2008/11/como-me-fudi-no-show-do-los-hermanos.html"><img ng-cloak ng-if="loserManos" src="{% static 'img/very_important_image.jpg' %}"></a>
+        {% verbatim %}
         <footer>token do usuário: <code>{{ data.my_uuid }}</code></footer>
       </div>
     </div>

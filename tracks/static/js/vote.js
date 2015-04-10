@@ -73,10 +73,21 @@
       $scope.insertVote = HubrocksAPI.insertVote;
       $scope.deleteVote = HubrocksAPI.deleteVote;
       $scope.voteSkip = HubrocksAPI.voteSkip;
+      $scope.loserManos = false;
 
       $scope.insertTrack = function () {
         if ($scope.newTrack) {
-          HubrocksAPI.insertVote($scope.newTrack);
+          HubrocksAPI.insertVote($scope.newTrack).then(
+            function () {
+              $scope.loserManos = false;
+            },
+            function (reason) {
+              if (reason.data === 'Los Hermanos Error') {
+                $scope.loserManos = true;
+              } else {
+                $scope.loserManos = false;
+              }
+            });HubrocksAPI.insertVote($scope.newTrack);
         }
       };
     }
