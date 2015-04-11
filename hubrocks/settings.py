@@ -12,6 +12,8 @@ import os
 import re
 from decouple import config, Csv
 import dj_database_url
+import sys
+TEST = 'test' in sys.argv
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -32,7 +34,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 
 # Admins and Managers
 ADMINS = (
-    ('Vinta', 'contato@vinta.com.br'),
+    ('Andre', 'andre@vinta.com.br'),
 )
 MANAGERS = ADMINS
 
@@ -250,6 +252,11 @@ LOGGING = {
         }
     }
 }
+
+
+if TEST:
+    import logging
+    logging.disable(logging.INFO)
 
 FANOUT_REALM = config('FANOUT_REALM', default=None)
 FANOUT_KEY = config('FANOUT_KEY', default=None)

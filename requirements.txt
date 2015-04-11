@@ -13,7 +13,11 @@ djangorestframework==3.0.5
 fanout==1.0.6
 gunicorn==19.2.1
 libsass==0.6.2
+mock==1.0.1
+model-mommy==1.2.4
 psycopg2==2.6
+pubcontrol==2.0.5
+PyJWT==0.4.3
 python-dateutil==2.4.0
 python-decouple==2.3
 pytz==2014.10

@@ -76,7 +76,7 @@
   }
 
   if (FANOUT_REALM) {
-    faye_client.subscribe('/player', function (data) {
+    faye_client.subscribe('/player-' + ESTABLISHMENT, function (data) {
       console.log('got data: ', data);
       if (data.service_id) {
         DZ.player.playTracks([data.service_id]);

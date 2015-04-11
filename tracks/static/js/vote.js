@@ -22,8 +22,8 @@
     }
   ]);
 
-  app.factory('HubrocksAPI', ['API_URL', 'my_uuid', '$http', 'Faye',
-    function (API_URL, my_uuid, $http, Faye) {
+  app.factory('HubrocksAPI', ['API_URL', 'ESTABLISHMENT', 'my_uuid', '$http', 'Faye',
+    function (API_URL, ESTABLISHMENT, my_uuid, $http, Faye) {
       $http.defaults.headers.common.Authorization = 'Token ' + my_uuid;
 
       var data = {
@@ -39,7 +39,7 @@
       fetchTracks();
 
       if (Faye) {
-        Faye.subscribe('/tracks', function (newData) {
+        Faye.subscribe('/tracks-' + ESTABLISHMENT, function (newData) {
           angular.extend(data, newData);
         });
       } else {
@@ -88,7 +88,7 @@
               } else {
                 $scope.loserManos = false;
               }
-            });HubrocksAPI.insertVote($scope.newTrack);
+            });
         }
       };
     }

@@ -1,13 +1,25 @@
+import logging
 from collections import namedtuple
 from random import randint
 
 from django.db import transaction
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 import django_fanout
 
 from tracks.serializers import TrackSerializer, TrackListSerializer
 from tracks.models import Track
+
+
+class EstablishmentAPIViewMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        self.establishment = get_object_or_404(
+            User, username=kwargs['establishment'])
+        return super(EstablishmentAPIViewMixin, self).dispatch(request,
+                                                               *args,
+                                                               **kwargs)
 
 
 class GetTokenMixin(object):
@@ -23,16 +35,17 @@ class GetTokenMixin(object):
         return token
 
 
-class SerializeTrackListMixin(object):
+class SerializeTrackListMixin(EstablishmentAPIViewMixin):
 
     def get_now_playing(self):
         try:
-            return Track.objects.get(now_playing=True)
+            return Track.objects.get(now_playing=True,
+                                     establishment=self.establishment)
         except Track.DoesNotExist:
             return None
 
     def track_list_serialize(self):
-        qs = Track.ordered_qs()
+        qs = Track.ordered_qs(establishment=self.establishment)
         PlayList = namedtuple('PlayList', ['tracks', 'now_playing'])
         return TrackListSerializer(PlayList(qs, self.get_now_playing()))
 
@@ -40,11 +53,12 @@ class SerializeTrackListMixin(object):
 class BroadCastTrackChangeMixin(SerializeTrackListMixin):
 
     def publish(self, channel, data):
+        channel = '{}-{}'.format(channel, self.establishment)
         if settings.FANOUT_REALM and settings.FANOUT_KEY:
             django_fanout.publish(channel, data)
         else:
-            print "Fanout not setup, would push {} to /{}".format(
-                data, channel)
+            logging.info("Fanout not setup, would push {} to /{}".format(
+                data, channel))
 
     def broadcast_list_changed(self):
         self.publish('tracks', self.track_list_serialize().data)
@@ -63,19 +77,25 @@ class SkipTrackMixin(BroadCastTrackChangeMixin):
 
     def skip(self):
         try:
-            current = Track.objects.get(now_playing=True)
+            current = Track.objects.get(now_playing=True,
+                                        establishment=self.establishment)
             self.stop_track(current)
-            qs = Track.objects.filter(now_playing=False).exclude(id=current.id)
+            qs = Track.objects.filter(now_playing=False,
+                                      establishment=self.establishment
+                                      ).exclude(id=current.id)
         except Track.DoesNotExist:
             current = None
-            qs = Track.objects.filter(now_playing=False)
+            qs = Track.objects.filter(establishment=self.establishment,
+                                      now_playing=False)
 
         # use current to prevent skip to the same song
         # get the first by vote
         if current is not None:
-            track = Track.ordered_qs().exclude(id=current.id).first()
+            track = Track.ordered_qs(establishment=self.establishment
+                                     ).exclude(id=current.id).first()
         else:
-            track = Track.ordered_qs().first()
+            track = Track.ordered_qs(establishment=self.establishment
+                                     ).first()
 
         # get random
         if not track:
@@ -97,5 +117,7 @@ class SkipTrackMixin(BroadCastTrackChangeMixin):
                 # two tracks now_playing
                 track.now_playing = True
                 track.save()
-                assert Track.objects.filter(now_playing=True).count() == 1
+                assert Track.objects.filter(now_playing=True,
+                                            establishment=self.establishment
+                                            ).count() == 1
             self.broadcast_track_changed(track)

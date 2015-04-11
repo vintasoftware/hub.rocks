@@ -3,6 +3,7 @@
 from django.db import models
 from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
 
 from model_utils.models import TimeStampedModel
 import requests
@@ -13,6 +14,7 @@ class Track(TimeStampedModel):
     title = models.CharField(max_length=255)
     artist = models.CharField(max_length=255)
     now_playing = models.BooleanField(default=False)
+    establishment = models.ForeignKey(User)
 
     class Meta:
         verbose_name = _("Track")
@@ -24,14 +26,15 @@ class Track(TimeStampedModel):
             self.title)
 
     @classmethod
-    def ordered_qs(cls):
+    def ordered_qs(cls, establishment):
         return (Track.objects.
-            filter(now_playing=False, votes__isnull=False).
+            filter(now_playing=False, votes__isnull=False,
+                   establishment=establishment).
             annotate(votes_count=Count('votes')).
             order_by('-votes_count', 'modified'))
 
     @classmethod
-    def fetch_and_save_track(cls, service_id):
+    def fetch_and_save_track(cls, service_id, establishment):
         response = requests.get(
             'http://api.deezer.com/track/{0}'.format(service_id))
         
@@ -41,10 +44,12 @@ class Track(TimeStampedModel):
                     response_json['title'].lower() != u'anna júlia'):
                 raise ValueError("Los Hermanos Error")
             if 'error' not in response_json:
-                return Track.objects.create(
-                    title=response_json['title'],
-                    artist=response_json['artist']['name'],
-                    service_id=service_id)
+                track, __ = Track.objects.update_or_create(
+                    defaults={'title': response_json['title'],
+                              'artist': response_json['artist']['name']},
+                    service_id=service_id,
+                    establishment=establishment)
+                return track
             else:
                 raise ValueError("Deezer error")
         else:

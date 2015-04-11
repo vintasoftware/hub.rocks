@@ -12,7 +12,8 @@
     <script type="text/javascript" src="{% static 'faye/include.min.js' %}"></script>
 
     <script>
-      window.API_URL = '/api';
+      window.ESTABLISHMENT = '{{ establishment}}';
+      window.API_URL = '/api/{{ establishment }}';
       window.FANOUT_REALM = '{{ FANOUT_REALM }}';
     </script>
   </head>
