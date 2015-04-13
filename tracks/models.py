@@ -10,7 +10,7 @@ import requests
 
 
 class Track(TimeStampedModel):
-    service_id = models.CharField(max_length=255, unique=True)
+    service_id = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     artist = models.CharField(max_length=255)
     now_playing = models.BooleanField(default=False)
@@ -18,6 +18,7 @@ class Track(TimeStampedModel):
 
     class Meta:
         verbose_name = _("Track")
+        unique_together = (("service_id", "establishment"),)
 
     def __unicode__(self):
         return u"Track {}: {} - {}".format(
@@ -37,11 +38,11 @@ class Track(TimeStampedModel):
     def fetch_and_save_track(cls, service_id, establishment):
         response = requests.get(
             'http://api.deezer.com/track/{0}'.format(service_id))
-        
+
         if response.status_code == 200:
             response_json = response.json()
-            if ('los hermanos' in response_json['artist']['name'].lower() and
-                    response_json['title'].lower() != u'anna júlia'):
+            if ('los hermanos' in response_json['artist']['name'].lower() or
+                    response_json['title'].lower() == u'anna júlia'):
                 raise ValueError("Los Hermanos Error")
             if 'error' not in response_json:
                 track, __ = Track.objects.update_or_create(

@@ -1,6 +1,5 @@
 
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
 
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
@@ -11,7 +10,7 @@ from tracks.serializers import (
 from tracks.models import Track, Vote
 from tracks.mixins import (
     GetTokenMixin, SkipTrackMixin, SerializeTrackListMixin,
-    BroadCastTrackChangeMixin, EstablishmentAPIViewMixin)
+    BroadCastTrackChangeMixin, EstablishmentViewMixin)
 
 
 class VoteSkipNowPlayingAPIView(SkipTrackMixin, GetTokenMixin,
@@ -95,7 +94,7 @@ class VoteAPIView(BroadCastTrackChangeMixin,
         return response
 
 
-class NowPlayingAPIView(EstablishmentAPIViewMixin,
+class NowPlayingAPIView(EstablishmentViewMixin,
                         generics.RetrieveAPIView):
     serializer_class = TrackSerializer
 

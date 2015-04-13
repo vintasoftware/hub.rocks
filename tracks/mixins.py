@@ -13,13 +13,13 @@ from tracks.serializers import TrackSerializer, TrackListSerializer
 from tracks.models import Track
 
 
-class EstablishmentAPIViewMixin(object):
+class EstablishmentViewMixin(object):
     def dispatch(self, request, *args, **kwargs):
         self.establishment = get_object_or_404(
             User, username=kwargs['establishment'])
-        return super(EstablishmentAPIViewMixin, self).dispatch(request,
-                                                               *args,
-                                                               **kwargs)
+        return super(EstablishmentViewMixin, self).dispatch(request,
+                                                            *args,
+                                                            **kwargs)
 
 
 class GetTokenMixin(object):
@@ -35,7 +35,7 @@ class GetTokenMixin(object):
         return token
 
 
-class SerializeTrackListMixin(EstablishmentAPIViewMixin):
+class SerializeTrackListMixin(EstablishmentViewMixin):
 
     def get_now_playing(self):
         try:

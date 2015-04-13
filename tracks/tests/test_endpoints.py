@@ -7,10 +7,10 @@ from mock import patch
 
 from tracks.models import Track
 from tracks.endpoints import VoteAPIView, SkipTrackAPIView
-from tracks.tests.utils import TrackTestCase
+from tracks.tests.utils import TrackAPITestCase
 
 
-class VoteSkipNowPlayingAPIViewTestCase(TrackTestCase):
+class VoteSkipNowPlayingAPIViewTestCase(TrackAPITestCase):
 
     def request(self, establishment):
         url = reverse('api:now-playing-skip',
@@ -49,7 +49,7 @@ class VoteSkipNowPlayingAPIViewTestCase(TrackTestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class TrackListAPIViewTestCase(TrackTestCase):
+class TrackListAPIViewTestCase(TrackAPITestCase):
 
     def request(self, establishment):
         url = reverse('api:list',
@@ -66,7 +66,7 @@ class TrackListAPIViewTestCase(TrackTestCase):
                          self.track_not_playing.service_id)
 
 
-class VoteAPIViewTestCase(TrackTestCase):
+class VoteAPIViewTestCase(TrackAPITestCase):
 
     def get_url(self, establishment, service_id):
         return reverse('api:vote',
@@ -117,7 +117,7 @@ class VoteAPIViewTestCase(TrackTestCase):
         self.assertEqual(mock.call_count, 2)
 
 
-class NowPlayingAPIView(TrackTestCase):
+class NowPlayingAPIViewTestCase(TrackAPITestCase):
 
     def test_get(self):
         response = self.client.get(reverse('api:now-playing',
@@ -127,7 +127,7 @@ class NowPlayingAPIView(TrackTestCase):
         self.assertEqual(response.data['service_id'], self.track.service_id)
 
 
-class SkipTrackAPIView(TrackTestCase):
+class SkipTrackAPIViewTestCase(TrackAPITestCase):
 
     @patch.object(SkipTrackAPIView, 'broadcast_list_changed')
     def test_post(self, mock):
