@@ -1,10 +1,10 @@
 from django.views import generic
 
-from braces.views import LoginRequiredMixin, SuperuserRequiredMixin
+from braces.views import LoginRequiredMixin, StaffuserRequiredMixin
 
 
 class PlayerView(LoginRequiredMixin,
-                 SuperuserRequiredMixin,
+                 StaffuserRequiredMixin,
                  generic.TemplateView):
     template_name = 'player/player.html'
 
