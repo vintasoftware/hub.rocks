@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.db import models
 from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
@@ -41,9 +39,6 @@ class Track(TimeStampedModel):
 
         if response.status_code == 200:
             response_json = response.json()
-            if (response_json['artist']['id'] == 7691 and
-                    response_json['title'].lower() != u'anna júlia'):
-                raise ValueError("Los Hermanos Error")
             if 'error' not in response_json:
                 track, __ = Track.objects.update_or_create(
                     defaults={'title': response_json['title'],
