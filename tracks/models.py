@@ -41,8 +41,8 @@ class Track(TimeStampedModel):
 
         if response.status_code == 200:
             response_json = response.json()
-            if ('los hermanos' in response_json['artist']['name'].lower() or
-                    response_json['title'].lower() == u'anna júlia'):
+            if ('los hermanos' in response_json['artist']['name'].lower() and
+                    response_json['title'].lower() != u'anna júlia'):
                 raise ValueError("Los Hermanos Error")
             if 'error' not in response_json:
                 track, __ = Track.objects.update_or_create(
