@@ -7,6 +7,7 @@ class PlayerView(LoginRequiredMixin,
                  StaffuserRequiredMixin,
                  generic.TemplateView):
     template_name = 'player/player.html'
+    login_url = '/admin/login'
 
     def get_context_data(self, *args, **kwargs):
         context = super(PlayerView, self).get_context_data(*args, **kwargs)
