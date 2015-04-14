@@ -37,10 +37,3 @@ class TrackSerializer(serializers.ModelSerializer):
 class TrackListSerializer(serializers.Serializer):
     tracks = TrackSerializer(many=True)
     now_playing = TrackSerializer()
-
-
-class TrackUpdateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Track
-        fields = ('service_id', 'now_playing')

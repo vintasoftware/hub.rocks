@@ -56,6 +56,7 @@ INSTALLED_APPS = (
 
     'core',
     'tracks',
+    'player',
 )
 
 BOWER_INSTALLED_APPS = (

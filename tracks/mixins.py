@@ -110,7 +110,6 @@ class SkipTrackMixin(BroadCastTrackChangeMixin):
                     # disappeared between the two queries we try selecting the
                     # first one.
                     track = qs.first()
-
         if track:
             with transaction.atomic():
                 # make sure we don't have a race condition and end up with

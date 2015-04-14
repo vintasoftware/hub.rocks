@@ -1,3 +1,5 @@
+
+from django.contrib.auth.models import User
 from django.test import TestCase
 
 from model_mommy import mommy
@@ -14,10 +16,12 @@ track_recipe = Recipe(
 
 class TrackTestCaseMixin(object):
     def setUp(self):
-        self.track = track_recipe.make(now_playing=True)
-        self.establishment = self.track.establishment
+        self.establishment = User.objects.create_user(
+            username='establishment', password='bar')
+        self.track = track_recipe.make(
+            now_playing=True, establishment=self.establishment)
         self.track_not_playing = track_recipe.make(
-            establishment=self.track.establishment)
+            establishment=self.establishment)
         mommy.make('Vote', track=self.track_not_playing)
         # other establishment
         self.track_other_establishment = track_recipe.make()

@@ -6,7 +6,7 @@ from model_mommy import mommy
 from mock import patch
 
 from tracks.models import Track
-from tracks.endpoints import VoteAPIView, SkipTrackAPIView
+from tracks.endpoints import VoteAPIView
 from tracks.tests.utils import TrackAPITestCase
 
 
@@ -125,14 +125,3 @@ class NowPlayingAPIViewTestCase(TrackAPITestCase):
                                                    self.establishment}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['service_id'], self.track.service_id)
-
-
-class SkipTrackAPIViewTestCase(TrackAPITestCase):
-
-    @patch.object(SkipTrackAPIView, 'broadcast_list_changed')
-    def test_post(self, mock):
-        response = self.client.post(reverse('api:next', kwargs={
-                                            'establishment':
-                                            self.establishment}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(mock.call_count, 1)
