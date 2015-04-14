@@ -69,6 +69,7 @@ BOWER_INSTALLED_APPS = (
     'https://github.com/monicao/angular-uuid4.git#v0.2.0',
     'faye#1.1.0',
     'angular-faye#0.2.2',
+    'jquery-cookie#1.4.1',
 )
 BOWER_COMPONENTS_ROOT = base_dir_join('components')
 
