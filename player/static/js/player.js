@@ -24,7 +24,7 @@
 
     var getNowPlaying = function () {
       return $.ajax({
-        url: API_URL + '/' + ESTABLISHMENT +'/tracks/now-playing/',
+        url: API_URL + '/tracks/now-playing/',
         type: 'GET'
       });
     };

@@ -115,13 +115,3 @@ class VoteAPIViewTestCase(TrackAPITestCase):
                                                    self.track.service_id))
         self.assertEqual(self.track.votes.count(), 0)
         self.assertEqual(mock.call_count, 2)
-
-
-class NowPlayingAPIViewTestCase(TrackAPITestCase):
-
-    def test_get(self):
-        response = self.client.get(reverse('api:now-playing',
-                                           kwargs={'establishment':
-                                                   self.establishment}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['service_id'], self.track.service_id)
