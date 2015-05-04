@@ -7,14 +7,14 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tracks', '0002_auto_20150219_1749'),
+        ('tracks', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='track',
-            name='on_queue',
-            field=models.BooleanField(default=True),
+            model_name='vote',
+            name='skip_request_by',
+            field=models.CharField(default=b'', max_length=255, blank=True),
             preserve_default=True,
         ),
     ]

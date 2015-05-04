@@ -25,21 +25,33 @@
           <tr>
             <th></th>
             <th colspan="2">
-              <span ng-if="data.now_playing.service_id">
+              <span ng-cloak ng-if="data.now_playing.service_id">
                 <span class="glyphicon glyphicon-play"></span> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
+                <button class="btn btn-xs pull-right"
+                        ng-cloak
+                        ng-class="{disabled: data.now_playing.skippers.indexOf(data.my_uuid) !== -1,
+                                   'btn-danger': data.now_playing.skippers.length > 0,
+                                   'btn-info': data.now_playing.skippers.length === 0}"
+                        ng-click="voteSkip(data.now_playing.service_id)">
+                  <ng-pluralize count="data.now_playing.left_to_skip"
+                                when="{'1': 'falta 1 skip',
+                                       'other': 'faltam {} skips'}">
+                  </ng-pluralize>
+
+                </button>
               </span>
-              <span ng-if="!data.now_playing.service_id">
+              <span ng-cloak ng-if="!data.now_playing.service_id">
                 Escolha uma música abaixo:
               </span>
             </th>
           </tr>
-          <tr ng-repeat="track in data.tracks">
+          <tr ng-cloak ng-repeat="track in data.tracks">
             <td class="text-center">
               <button class="btn btn-xs"
-                      ng-if="track.votes.indexOf(data.my_uuid) === -1"
+                      ng-if="track.voters.indexOf(data.my_uuid) === -1"
                       ng-click="insertVote(track.service_id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
               <button class="btn btn-xs"
-                      ng-if="track.votes.indexOf(data.my_uuid) !== -1"
+                      ng-if="track.voters.indexOf(data.my_uuid) !== -1"
                       ng-click="deleteVote(track.service_id)"><span class="glyphicon glyphicon-remove"></span></button>
             </td>
             <td>{{ track.title }} - {{ track.artist }}</td>
@@ -70,18 +82,22 @@
     <script type="text/javascript" src="{% static 'bootstrap-sass-official/assets/javascripts/bootstrap.js' %}"></script>
     <script type="text/javascript" src="{% static 'selectize/dist/js/standalone/selectize.js' %}"></script>
     <script type="text/javascript" src="{% static 'selectize-enter-key-submit/src/plugin.js' %}"></script>
-    <script type="text/javascript" src="{% static 'pusher/dist/pusher.js' %}"></script>
-    <script type="text/javascript" src="{% static 'pusher-angular/lib/pusher-angular.js' %}"></script>
+    <script type="text/javascript" src="{% static 'faye/include.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'angular-faye/build/angular-faye.js' %}"></script>
 
     <script>
       var app = angular.module('hubrocks.const', []);
 
-      app.factory('API_URL', function () {
-        return 'api';
+      app.factory('ESTABLISHMENT', function () {
+        return '{{ establishment }}';
       });
 
-      app.factory('PUSHER_API_KEY', function () {
-        return '{{ PUSHER_API_KEY }}';
+      app.factory('API_URL', function () {
+        return '/api/{{ establishment }}';
+      });
+
+      app.factory('FANOUT_REALM', function () {
+        return '{{ FANOUT_REALM }}';
       });
     </script>
 

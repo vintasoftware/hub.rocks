@@ -1,6 +1,6 @@
 (function () {
   var app = angular.module('hubrocks', [
-    'LocalStorageModule', 'uuid4', 'pusher-angular', 'hubrocks.const']);
+    'LocalStorageModule', 'uuid4', 'hubrocks.const', 'faye']);
 
   app.factory('my_uuid', ['localStorageService', 'uuid4',
     function (localStorageService, uuid4) {
@@ -14,9 +14,18 @@
     }
   ]);
 
-  app.factory('HubrocksAPI', ['API_URL', 'PUSHER_API_KEY', 'my_uuid', '$http', '$pusher',
-    function (API_URL, PUSHER_API_KEY, my_uuid, $http, $pusher) {
+  app.factory('Faye', ['$faye', 'FANOUT_REALM',
+    function($faye, FANOUT_REALM) {
+      if (!FANOUT_REALM)
+        return null;
+      return $faye('http://' + FANOUT_REALM + '.fanoutcdn.com/bayeux');
+    }
+  ]);
+
+  app.factory('HubrocksAPI', ['API_URL', 'ESTABLISHMENT', 'my_uuid', '$http', 'Faye',
+    function (API_URL, ESTABLISHMENT, my_uuid, $http, Faye) {
       $http.defaults.headers.common.Authorization = 'Token ' + my_uuid;
+
       var data = {
         'my_uuid': my_uuid
       };
@@ -29,24 +38,32 @@
       };
       fetchTracks();
 
-      var pusher = $pusher(new Pusher(PUSHER_API_KEY));
-      pusher.subscribe('tracks');
-      pusher.bind('updated', function () {
-        fetchTracks();
-      });
+      if (Faye) {
+        Faye.subscribe('/tracks-' + ESTABLISHMENT, function (newData) {
+          angular.extend(data, newData);
+        });
+      } else {
+        console.log("Running without Faye");
+      }
 
       var insertVote = function (service_id) {
-        $http.post(API_URL + '/tracks/' + service_id + '/vote/');
+        return $http.post(API_URL + '/tracks/' + service_id + '/vote/');
       };
 
       var deleteVote = function (service_id) {
         $http.delete(API_URL + '/tracks/' + service_id + '/vote/');
       };
 
+      var voteSkip = function(service_id) {
+        $http.post(API_URL + '/tracks/now-playing/voteskip/',
+                   {'service_id': service_id});
+      };
+
       return {
         data: data,
         insertVote: insertVote,
         deleteVote: deleteVote,
+        voteSkip: voteSkip,
       };
     }
   ]);
@@ -56,6 +73,7 @@
       $scope.data = HubrocksAPI.data;
       $scope.insertVote = HubrocksAPI.insertVote;
       $scope.deleteVote = HubrocksAPI.deleteVote;
+      $scope.voteSkip = HubrocksAPI.voteSkip;
 
       $scope.insertTrack = function () {
         if ($scope.newTrack) {

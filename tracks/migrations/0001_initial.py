@@ -15,11 +15,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Track',
             fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
                 ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
-                ('service_id', models.CharField(max_length=255, serialize=False, primary_key=True)),
+                ('service_id', models.CharField(unique=True, max_length=255)),
                 ('title', models.CharField(max_length=255)),
                 ('artist', models.CharField(max_length=255)),
+                ('now_playing', models.BooleanField(default=False)),
             ],
             options={
                 'verbose_name': 'Track',
@@ -36,7 +38,7 @@ class Migration(migrations.Migration):
                 ('track', models.ForeignKey(related_name='votes', to='tracks.Track')),
             ],
             options={
-                'verbose_name': 'Track',
+                'verbose_name': 'Vote',
             },
             bases=(models.Model,),
         ),

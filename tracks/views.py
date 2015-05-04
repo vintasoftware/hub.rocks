@@ -1,13 +1,9 @@
 from django.views import generic
 
-from braces.views import LoginRequiredMixin, SuperuserRequiredMixin
+
+from tracks.mixins import EstablishmentViewMixin
 
 
-class VoteView(generic.TemplateView):
+class VoteView(EstablishmentViewMixin,
+               generic.TemplateView):
     template_name = 'tracks/vote.html'
-
-
-class PlayerView(LoginRequiredMixin,
-                 SuperuserRequiredMixin,
-                 generic.TemplateView):
-    template_name = 'tracks/player.html'

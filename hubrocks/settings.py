@@ -12,6 +12,8 @@ import os
 import re
 from decouple import config, Csv
 import dj_database_url
+import sys
+TEST = 'test' in sys.argv
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -33,6 +35,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 # Admins and Managers
 ADMINS = (
     ('Vinta', 'contato@vinta.com.br'),
+    ('Andre', 'andre@vinta.com.br'),
 )
 MANAGERS = ADMINS
 
@@ -53,6 +56,7 @@ INSTALLED_APPS = (
 
     'core',
     'tracks',
+    'player',
 )
 
 BOWER_INSTALLED_APPS = (
@@ -63,8 +67,9 @@ BOWER_INSTALLED_APPS = (
     'angular#1.3.13',
     'https://github.com/grevory/angular-local-storage.git#0.1.5',
     'https://github.com/monicao/angular-uuid4.git#v0.2.0',
-    'pusher#2.2.4',
-    'pusher-angular#0.1.4',
+    'faye#1.1.0',
+    'angular-faye#0.2.2',
+    'jquery-cookie#1.4.1',
 )
 BOWER_COMPONENTS_ROOT = base_dir_join('components')
 
@@ -89,7 +94,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
 
-    'core.context_processors.pusher_api_key',
+    'core.context_processors.fanout_realm',
 )
 
 ROOT_URLCONF = 'hubrocks.urls'
@@ -250,3 +255,11 @@ LOGGING = {
         }
     }
 }
+
+
+if TEST:
+    import logging
+    logging.disable(logging.INFO)
+
+FANOUT_REALM = config('FANOUT_REALM', default=None)
+FANOUT_KEY = config('FANOUT_KEY', default=None)
