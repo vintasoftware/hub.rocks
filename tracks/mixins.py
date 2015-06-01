@@ -3,14 +3,16 @@ from collections import namedtuple
 from random import randint
 
 from django.db import transaction
-from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.contrib.auth import get_user_model
 
 import django_fanout
 
 from tracks.serializers import TrackSerializer, TrackListSerializer
 from tracks.models import Track
+
+User = get_user_model()
 
 
 class EstablishmentViewMixin(object):

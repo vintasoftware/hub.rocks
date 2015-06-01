@@ -1,7 +1,7 @@
 boto==2.36.0
 Collectfast==0.2.1
 dj-database-url==0.3.0
-Django==1.7.7
+Django==1.8.2
 django-appconf==1.0.1
 django-bower==5.0.4
 django-braces==1.4.0
@@ -19,6 +19,7 @@ model-mommy==1.2.4
 psycopg2==2.6
 pubcontrol==2.1.0
 PyJWT==0.4.3
+pylast==1.2.1
 python-dateutil==2.4.0
 python-decouple==2.3
 pytz==2014.10
