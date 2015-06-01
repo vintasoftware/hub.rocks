@@ -8,18 +8,15 @@ from tracks.mixins import SkipTrackMixin
 from tracks.models import Track
 from tracks.serializers import TrackSerializer
 
-from player.mixins import PlayerEndpointMixin, LastFMScrobblerMixin
+from player.mixins import PlayerEndpointMixin
 
 
-class SkipTrackAPIView(LastFMScrobblerMixin, PlayerEndpointMixin,
+class SkipTrackAPIView(PlayerEndpointMixin,
                        SkipTrackMixin, generics.GenericAPIView):
     serializer_class = TrackSerializer
 
     def post(self, request, *args, **kwargs):
         self.skip()
-        current = self.get_now_playing()
-        if current and current.votes.count() > 0:
-            self.scrobble(current.artist, current.title)
         return Response(status=status.HTTP_200_OK)
 
 
