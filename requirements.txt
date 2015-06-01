@@ -3,7 +3,7 @@ Collectfast==0.2.1
 dj-database-url==0.3.0
 Django==1.7.7
 django-appconf==1.0.1
-django-bower==5.0.2
+django-bower==5.0.4
 django-braces==1.4.0
 django-compressor==1.4
 django-fanout==1.1.0
