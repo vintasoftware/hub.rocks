@@ -11,8 +11,8 @@ from tracks.serializers import TrackSerializer
 from player.mixins import PlayerEndpointMixin
 
 
-class SkipTrackAPIView(PlayerEndpointMixin,
-                       SkipTrackMixin, generics.GenericAPIView):
+class SkipTrackAPIView(PlayerEndpointMixin, SkipTrackMixin,
+                       generics.GenericAPIView):
     serializer_class = TrackSerializer
 
     def post(self, request, *args, **kwargs):

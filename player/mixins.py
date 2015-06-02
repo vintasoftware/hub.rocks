@@ -1,4 +1,3 @@
-
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 
