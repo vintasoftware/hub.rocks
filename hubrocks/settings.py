@@ -39,6 +39,7 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
+AUTH_USER_MODEL = 'accounts.Account'
 
 # Application definition
 INSTALLED_APPS = (
@@ -57,6 +58,7 @@ INSTALLED_APPS = (
     'core',
     'tracks',
     'player',
+    'accounts',
 )
 
 BOWER_INSTALLED_APPS = (
@@ -263,3 +265,7 @@ if TEST:
 
 FANOUT_REALM = config('FANOUT_REALM', default=None)
 FANOUT_KEY = config('FANOUT_KEY', default=None)
+
+
+LASTFM_API_KEY = config('LASTFM_API_KEY', default=None)
+LASTFM_API_SECRET = config('LASTFM_API_SECRET', default=None)

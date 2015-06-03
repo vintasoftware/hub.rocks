@@ -45,7 +45,7 @@ class VoteSkipNowPlayingAPIViewTestCase(TrackAPITestCase):
         self.assertEqual(self.track.votes.first().skip_request_by, 'foo')
 
     def test_skip_track_from_other_establishment(self):
-        response = self.request(mommy.make('User'))
+        response = self.request(mommy.make('Account'))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 

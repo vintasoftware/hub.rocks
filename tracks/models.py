@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Count
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
 
 from model_utils.models import TimeStampedModel
 import requests
@@ -12,7 +12,7 @@ class Track(TimeStampedModel):
     title = models.CharField(max_length=255)
     artist = models.CharField(max_length=255)
     now_playing = models.BooleanField(default=False)
-    establishment = models.ForeignKey(User)
+    establishment = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     class Meta:
         verbose_name = _("Track")

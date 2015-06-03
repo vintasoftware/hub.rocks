@@ -47,6 +47,6 @@ class TrackTestCase(TrackTestCase):
             with transaction.atomic():
                 Track.objects.create(service_id=self.track.service_id,
                                      establishment=self.establishment)
-        establishment = mommy.make('User')
+        establishment = mommy.make('Account')
         Track.objects.create(service_id=self.track.service_id,
                              establishment=establishment)

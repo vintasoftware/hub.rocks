@@ -1,5 +1,5 @@
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from model_mommy import mommy
@@ -12,6 +12,8 @@ from tracks.models import Track
 track_recipe = Recipe(
     Track, service_id=seq('1'),
 )
+
+User = get_user_model()
 
 
 class TrackTestCaseMixin(object):

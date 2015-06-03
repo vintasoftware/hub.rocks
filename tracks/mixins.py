@@ -1,16 +1,39 @@
+import time
 import logging
+import pylast
 from collections import namedtuple
 from random import randint
 
 from django.db import transaction
-from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.contrib.auth import get_user_model
 
 import django_fanout
 
 from tracks.serializers import TrackSerializer, TrackListSerializer
 from tracks.models import Track
+
+User = get_user_model()
+
+
+class LastFMScrobblerMixin(object):
+
+    def scrobble(self, artist, title, timestamp=None):
+        if timestamp is None:
+            timestamp = int(time.time())
+
+        if settings.LASTFM_API_KEY and self.establishment.lastfm_username:
+            network = pylast.LastFMNetwork(
+                api_key=settings.LASTFM_API_KEY,
+                api_secret=settings.LASTFM_API_SECRET,
+                username=self.establishment.lastfm_username,
+                password_hash=self.establishment.lastfm_hashed_password)
+
+            network.scrobble(artist=artist, title=title, timestamp=timestamp)
+        else:
+            logging.info("last.fm not setup, would scrobble {} for {}".format(
+                         title, self.establishment.username))
 
 
 class EstablishmentViewMixin(object):
@@ -50,7 +73,7 @@ class SerializeTrackListMixin(EstablishmentViewMixin):
         return TrackListSerializer(PlayList(qs, self.get_now_playing()))
 
 
-class BroadCastTrackChangeMixin(SerializeTrackListMixin):
+class BroadCastTrackChangeMixin(LastFMScrobblerMixin, SerializeTrackListMixin):
 
     def publish(self, channel, data):
         channel = '{}-{}'.format(channel, self.establishment)
@@ -65,6 +88,8 @@ class BroadCastTrackChangeMixin(SerializeTrackListMixin):
 
     def broadcast_track_changed(self, track):
         self.publish('player', TrackSerializer(track).data)
+        if track and track.votes.count() > 0:
+            self.scrobble(track.artist, track.title)
         self.broadcast_list_changed()
 
 
