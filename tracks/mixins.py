@@ -145,6 +145,7 @@ class SkipTrackMixin(BroadCastTrackChangeMixin):
                 # make sure we don't have a race condition and end up with
                 # two tracks now_playing
                 track.now_playing = True
+                track.played_on_random = True
                 track.save()
                 assert Track.objects.filter(now_playing=True,
                                             establishment=self.establishment
