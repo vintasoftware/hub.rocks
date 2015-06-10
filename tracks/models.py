@@ -13,6 +13,7 @@ class Track(TimeStampedModel):
     artist = models.CharField(max_length=255)
     now_playing = models.BooleanField(default=False)
     establishment = models.ForeignKey(settings.AUTH_USER_MODEL)
+    played_on_random = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("Track")

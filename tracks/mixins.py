@@ -124,6 +124,11 @@ class SkipTrackMixin(BroadCastTrackChangeMixin):
 
         # get random
         if not track:
+            new_qs = qs.filter(played_on_random=False)
+            if new_qs.exists():
+                qs = new_qs
+            else:
+                qs.update(played_on_random=False)
             # select a track at random
             last = qs.count() - 1
             if last >= 0:
@@ -140,6 +145,7 @@ class SkipTrackMixin(BroadCastTrackChangeMixin):
                 # make sure we don't have a race condition and end up with
                 # two tracks now_playing
                 track.now_playing = True
+                track.played_on_random = True
                 track.save()
                 assert Track.objects.filter(now_playing=True,
                                             establishment=self.establishment
