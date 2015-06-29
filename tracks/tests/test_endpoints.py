@@ -71,14 +71,21 @@ class VoteAPIViewTestCase(TrackAPITestCase):
     def get_url(self, establishment, service_id):
         return reverse('api:vote',
                        kwargs={'establishment': establishment.username,
-                               'service_id': service_id})
+                               'service_id': service_id}) + '?service=deezer'
 
     @staticmethod
-    def create_track(service_id, establishment):
+    def create_track(service, service_id, establishment):
         Track.objects.update_or_create(
-                             defaults={'title': 'foo', 'artist': 'bar'},
-                             service_id=service_id,
-                             establishment=establishment)
+            service=service,
+            defaults={'title': 'foo', 'artist': 'bar'},
+            service_id=service_id,
+            establishment=establishment)
+
+    def test_vote_without_service_400(self):
+        url = self.get_url(self.establishment,
+                           self.track.service_id).split('?')[0]
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @patch.object(VoteAPIView, 'broadcast_list_changed')
     def test_vote_existing_track(self, mock):

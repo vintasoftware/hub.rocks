@@ -6,11 +6,11 @@ from rest_framework.response import Response
 from requests.exceptions import RequestException
 
 from tracks.serializers import (
-    TrackSerializer, VoteSerializer, TrackListSerializer)
+    VoteSerializer, TrackListSerializer)
 from tracks.models import Track, Vote
 from tracks.mixins import (
     GetTokenMixin, SkipTrackMixin, SerializeTrackListMixin,
-    BroadCastTrackChangeMixin, EstablishmentViewMixin)
+    BroadCastTrackChangeMixin)
 
 
 class VoteSkipNowPlayingAPIView(SkipTrackMixin, GetTokenMixin,
@@ -58,13 +58,16 @@ class VoteAPIView(BroadCastTrackChangeMixin,
             service_id=self.kwargs['service_id'],
             establishment=self.establishment).pk
 
-        return super(VoteAPIView,
-            self).get_serializer(*args, **kwargs)
+        return super(VoteAPIView, self).get_serializer(*args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         service_id = self.kwargs['service_id']
+        service = request.QUERY_PARAMS.get('service')
+        if service is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data='No service specified')
         try:
-            Track.fetch_and_save_track(service_id, self.establishment)
+            Track.fetch_and_save_track(service, service_id, self.establishment)
         except RequestException:
             return Response(
                 status=status.HTTP_503_SERVICE_UNAVAILABLE)
@@ -72,8 +75,7 @@ class VoteAPIView(BroadCastTrackChangeMixin,
             return Response(
                 status=status.HTTP_400_BAD_REQUEST, data=e.message)
 
-        return super(VoteAPIView,
-            self).create(request, *args, **kwargs)
+        return super(VoteAPIView, self).create(request, *args, **kwargs)
 
     def get_object(self, *args, **kwargs):
         return get_object_or_404(
@@ -92,20 +94,3 @@ class VoteAPIView(BroadCastTrackChangeMixin,
         if 200 <= response.status_code < 300:
             self.broadcast_list_changed()
         return response
-
-
-class NowPlayingAPIView(EstablishmentViewMixin,
-                        generics.RetrieveAPIView):
-    serializer_class = TrackSerializer
-
-    def get_object(self, *args, **kwargs):
-        return get_object_or_404(Track, now_playing=True,
-                                 establishment=self.establishment)
-
-
-class SkipTrackAPIView(SkipTrackMixin, generics.GenericAPIView):
-    serializer_class = TrackSerializer
-
-    def post(self, request, *args, **kwargs):
-        self.skip()
-        return Response(status=status.HTTP_200_OK)

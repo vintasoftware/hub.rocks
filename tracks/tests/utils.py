@@ -22,6 +22,8 @@ class TrackTestCaseMixin(object):
             username='establishment', password='bar')
         self.track = track_recipe.make(
             now_playing=True, establishment=self.establishment)
+        self.track_youtube = track_recipe.make(
+            establishment=self.establishment, service=Track.SERVICES.youtube)
         self.track_not_playing = track_recipe.make(
             establishment=self.establishment)
         mommy.make('Vote', track=self.track_not_playing)

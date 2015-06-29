@@ -46,8 +46,10 @@
         console.log("Running without Faye");
       }
 
-      var insertVote = function (service_id) {
-        return $http.post(API_URL + '/tracks/' + service_id + '/vote/');
+      var insertVote = function (identifier) {
+        var service = identifier.split(';')[0];
+        var service_id = identifier.split(';')[1];
+        return $http.post(API_URL + '/tracks/' + service_id + '/vote/?service=' + service);
       };
 
       var deleteVote = function (service_id) {

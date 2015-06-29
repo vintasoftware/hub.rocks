@@ -18,7 +18,7 @@ class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
         fields = ('service_id', 'artist', 'title',
-                  'votes', 'voters', 'skippers')
+                  'votes', 'voters', 'skippers', 'service')
 
     def get_voters(self, track):
         return list(track.votes.values_list('token', flat=True))
