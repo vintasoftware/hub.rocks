@@ -29,7 +29,7 @@ $(document).ready(function () {
     return false;
   });
 
-  $('.select-track').selectize({
+  selectizedInput = $('.select-track').selectize({
     plugins: ['enter_key_submit'],
     onInitialize: function (foo) {
       this.on('submit', function () {

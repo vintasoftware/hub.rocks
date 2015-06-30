@@ -70,12 +70,26 @@
     }
   ]);
 
-  app.controller('HubrocksCtrl', ['HubrocksAPI', '$scope',
-    function(HubrocksAPI, $scope) {
+  app.controller('HubrocksCtrl', ['HubrocksAPI', '$scope', '$timeout',
+    function(HubrocksAPI, $scope, $timeout) {
       $scope.data = HubrocksAPI.data;
       $scope.insertVote = HubrocksAPI.insertVote;
       $scope.deleteVote = HubrocksAPI.deleteVote;
       $scope.voteSkip = HubrocksAPI.voteSkip;
+
+      $scope.$watch('newTrack', function (newTrack){
+        if (newTrack) {
+          HubrocksAPI.insertVote(newTrack);
+          
+          $timeout(function() {
+            selectizedInput[0].selectize.clear();
+            $('.selectize-input').css('background-color', 'green');
+            setTimeout(function(){
+              $('.selectize-input').css('background-color', 'white');
+            }, 300);
+          });
+        }
+      });
 
       $scope.insertTrack = function () {
         if ($scope.newTrack) {
