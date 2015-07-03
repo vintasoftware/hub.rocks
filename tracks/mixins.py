@@ -91,7 +91,9 @@ class BroadCastTrackChangeMixin(LastFMScrobblerMixin, SerializeTrackListMixin):
         if track and track.votes.count() > 0:
             try:
                 self.scrobble(track.artist, track.title)
-            except pylast.WSError:
+            except (pylast.WSError, IndexError):
+                # there is a bug in current version that raises IndexError
+                # at some cases
                 pass
         self.broadcast_list_changed()
 
