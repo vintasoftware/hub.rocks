@@ -46,24 +46,29 @@
         console.log("Running without Faye");
       }
 
-      var insertVote = function (identifier) {
+      var insertTrack = function (identifier) {
         var service = identifier.split(';')[0];
         var service_id = identifier.split(';')[1];
-        return $http.post(API_URL + '/tracks/' + service_id + '/vote/?service=' + service);
+        return $http.post(API_URL + '/tracks/' + service + '/' + service_id + '/');
       };
 
-      var deleteVote = function (service_id) {
-        $http.delete(API_URL + '/tracks/' + service_id + '/vote/');
+      var insertVote = function (track_id) {
+        $http.post(API_URL + '/tracks/' + track_id + '/vote/');
       };
 
-      var voteSkip = function(service_id) {
+      var deleteVote = function (track_id) {
+        $http.delete(API_URL + '/tracks/' + track_id + '/vote/');
+      };
+
+      var voteSkip = function(track_id) {
         $http.post(API_URL + '/tracks/now-playing/voteskip/',
-                   {'service_id': service_id});
+                   {'track_id': track_id});
       };
 
       return {
         data: data,
         insertVote: insertVote,
+        insertTrack: insertTrack,
         deleteVote: deleteVote,
         voteSkip: voteSkip,
       };
@@ -79,7 +84,7 @@
 
       $scope.$watch('newTrack', function (newTrack){
         if (newTrack) {
-          HubrocksAPI.insertVote(newTrack);
+          HubrocksAPI.insertTrack(newTrack);
           
           $timeout(function() {
             selectizedInput[0].selectize.clear();
@@ -93,7 +98,7 @@
 
       $scope.insertTrack = function () {
         if ($scope.newTrack) {
-          HubrocksAPI.insertVote($scope.newTrack);
+          HubrocksAPI.insertTrack($scope.newTrack);
         }
       };
     }

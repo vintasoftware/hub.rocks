@@ -25,14 +25,14 @@
           <tr>
             <th></th>
             <th colspan="2">
-              <span ng-cloak ng-if="data.now_playing.service_id">
+              <span ng-cloak ng-if="data.now_playing.id">
                 <span class="glyphicon glyphicon-play"></span> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
                 <button class="btn btn-xs pull-right"
                         ng-cloak
                         ng-class="{disabled: data.now_playing.skippers.indexOf(data.my_uuid) !== -1,
                                    'btn-danger': data.now_playing.skippers.length > 0,
                                    'btn-info': data.now_playing.skippers.length === 0}"
-                        ng-click="voteSkip(data.now_playing.service_id)">
+                        ng-click="voteSkip(data.now_playing.id)">
                   <ng-pluralize count="data.now_playing.left_to_skip"
                                 when="{'1': 'falta 1 skip',
                                        'other': 'faltam {} skips'}">
@@ -40,7 +40,7 @@
 
                 </button>
               </span>
-              <span ng-cloak ng-if="!data.now_playing.service_id">
+              <span ng-cloak ng-if="!data.now_playing.id">
                 Escolha uma música abaixo:
               </span>
             </th>
@@ -58,10 +58,10 @@
             <td class="text-center">
               <button class="btn btn-xs"
                       ng-if="track.voters.indexOf(data.my_uuid) === -1"
-                      ng-click="insertVote(track.service_id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                      ng-click="insertVote(track.id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
               <button class="btn btn-xs"
                       ng-if="track.voters.indexOf(data.my_uuid) !== -1"
-                      ng-click="deleteVote(track.service_id)"><span class="glyphicon glyphicon-remove"></span></button>
+                      ng-click="deleteVote(track.id)"><span class="glyphicon glyphicon-remove"></span></button>
             </td>
             <td>{{ track.title }} - {{ track.artist }}</td>
             <td>{{ track.votes.length }}</td>
