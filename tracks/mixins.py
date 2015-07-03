@@ -89,7 +89,10 @@ class BroadCastTrackChangeMixin(LastFMScrobblerMixin, SerializeTrackListMixin):
     def broadcast_track_changed(self, track):
         self.publish('player', TrackSerializer(track).data)
         if track and track.votes.count() > 0:
-            self.scrobble(track.artist, track.title)
+            try:
+                self.scrobble(track.artist, track.title)
+            except pylast.WSError:
+                pass
         self.broadcast_list_changed()
 
 
