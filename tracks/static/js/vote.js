@@ -46,38 +46,59 @@
         console.log("Running without Faye");
       }
 
-      var insertVote = function (service_id) {
-        return $http.post(API_URL + '/tracks/' + service_id + '/vote/');
+      var insertTrack = function (identifier) {
+        var service = identifier.split(';')[0];
+        var service_id = identifier.split(';')[1];
+        return $http.post(API_URL + '/tracks/' + service + '/' + service_id + '/');
       };
 
-      var deleteVote = function (service_id) {
-        $http.delete(API_URL + '/tracks/' + service_id + '/vote/');
+      var insertVote = function (track_id) {
+        $http.post(API_URL + '/tracks/' + track_id + '/vote/');
       };
 
-      var voteSkip = function(service_id) {
+      var deleteVote = function (track_id) {
+        $http.delete(API_URL + '/tracks/' + track_id + '/vote/');
+      };
+
+      var voteSkip = function(track_id) {
         $http.post(API_URL + '/tracks/now-playing/voteskip/',
-                   {'service_id': service_id});
+                   {'track_id': track_id});
       };
 
       return {
         data: data,
         insertVote: insertVote,
+        insertTrack: insertTrack,
         deleteVote: deleteVote,
         voteSkip: voteSkip,
       };
     }
   ]);
 
-  app.controller('HubrocksCtrl', ['HubrocksAPI', '$scope',
-    function(HubrocksAPI, $scope) {
+  app.controller('HubrocksCtrl', ['HubrocksAPI', '$scope', '$timeout',
+    function(HubrocksAPI, $scope, $timeout) {
       $scope.data = HubrocksAPI.data;
       $scope.insertVote = HubrocksAPI.insertVote;
       $scope.deleteVote = HubrocksAPI.deleteVote;
       $scope.voteSkip = HubrocksAPI.voteSkip;
 
+      $scope.$watch('newTrack', function (newTrack){
+        if (newTrack) {
+          HubrocksAPI.insertTrack(newTrack);
+          
+          $timeout(function() {
+            selectizedInput[0].selectize.clear();
+            $('.selectize-input').css('background-color', 'green');
+            setTimeout(function(){
+              $('.selectize-input').css('background-color', 'white');
+            }, 300);
+          });
+        }
+      });
+
       $scope.insertTrack = function () {
         if ($scope.newTrack) {
-          HubrocksAPI.insertVote($scope.newTrack);
+          HubrocksAPI.insertTrack($scope.newTrack);
         }
       };
     }

@@ -88,7 +88,8 @@ class BroadCastTrackChangeMixin(LastFMScrobblerMixin, SerializeTrackListMixin):
 
     def broadcast_track_changed(self, track):
         self.publish('player', TrackSerializer(track).data)
-        if track and track.votes.count() > 0:
+        if (track and track.service == Track.SERVICES.deezer and
+                track.votes.count() > 0):
             try:
                 self.scrobble(track.artist, track.title)
             except (pylast.WSError, IndexError):
@@ -156,3 +157,4 @@ class SkipTrackMixin(BroadCastTrackChangeMixin):
                                             establishment=self.establishment
                                             ).count() == 1
             self.broadcast_track_changed(track)
+            return track

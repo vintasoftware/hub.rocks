@@ -1,11 +1,24 @@
 $(document).ready(function () {
-  function transformTracksJson(tracks) {
+  function transformDeezerTracksJson(tracks) {
     return $.map(tracks, function (t) {
       return {
-        id: t.id,
+        id: 'deezer;' + t.id,
         title: t.title,
         artist: t.artist.name,
-        cover: t.album.cover
+        cover: t.album.cover,
+        service: 'deezer',
+      };
+    });
+  }
+
+  function transformYoutubeJson(tracks) {
+    return $.map(tracks, function (t) {
+      return {
+        id: 'youtube;' + t.id.videoId,
+        title: t.snippet.title,
+        artist: t.snippet.channelTitle,
+        cover: t.snippet.thumbnails.default.url,
+        service: 'youtube'
       };
     });
   }
@@ -16,7 +29,7 @@ $(document).ready(function () {
     return false;
   });
 
-  $('.select-track').selectize({
+  selectizedInput = $('.select-track').selectize({
     plugins: ['enter_key_submit'],
     onInitialize: function (foo) {
       this.on('submit', function () {
@@ -32,18 +45,37 @@ $(document).ready(function () {
     load: function(query, callback) {
       if (!query.length) return callback();
 
+      var results = [];
+
       $.ajax({
         url: 'http://api.deezer.com/search/track?output=jsonp&q=' +
           encodeURIComponent(query),
         dataType: 'jsonp',
         error: function() {
-          callback();
+          results = [];
         },
         success: function (json) {
-          callback(
-            transformTracksJson(json.data.slice(0, 15)));
+          results = transformDeezerTracksJson(json.data.slice(0, 15));
+          if (YOUTUBE_KEY) {
+            $.ajax({
+              url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&key=' +
+                YOUTUBE_KEY + '&q=' + encodeURIComponent(query),
+              dataType: 'jsonp',
+              error: function () {
+              },
+              success: function (json) {
+                results = results.concat(transformYoutubeJson(json.items));
+              },
+              complete: function () {
+                callback(results);
+              }
+            });
+          } else {
+            callback(results);
+          }
         }
       });
+
     },
     render: {
       option: function(track, escape) {
@@ -52,6 +84,7 @@ $(document).ready(function () {
           '<div class="title">' +
             '<span class="name">' + escape(track.title) + '</span>' +
             '<span class="by">' + escape(track.artist) + '</span>' +
+            '<img class="pull-right" src="' + (track.service === 'deezer' ? DEEZER_ICON : YOUTUBE_ICON) + '" >' +
           '</div>' +
         '</div>';
       }

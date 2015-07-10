@@ -21,18 +21,18 @@
     <div class="container">
       <div class="col-xs-12">
         <h1><span class="glyphicon glyphicon-music"></span> hub.rocks</h1>
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped no-margin">
           <tr>
             <th></th>
             <th colspan="2">
-              <span ng-cloak ng-if="data.now_playing.service_id">
+              <span ng-cloak ng-if="data.now_playing.id">
                 <span class="glyphicon glyphicon-play"></span> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
                 <button class="btn btn-xs pull-right"
                         ng-cloak
                         ng-class="{disabled: data.now_playing.skippers.indexOf(data.my_uuid) !== -1,
                                    'btn-danger': data.now_playing.skippers.length > 0,
                                    'btn-info': data.now_playing.skippers.length === 0}"
-                        ng-click="voteSkip(data.now_playing.service_id)">
+                        ng-click="voteSkip(data.now_playing.id)">
                   <ng-pluralize count="data.now_playing.left_to_skip"
                                 when="{'1': 'falta 1 skip',
                                        'other': 'faltam {} skips'}">
@@ -40,34 +40,33 @@
 
                 </button>
               </span>
-              <span ng-cloak ng-if="!data.now_playing.service_id">
+              <span ng-cloak ng-if="!data.now_playing.id">
                 Escolha uma música abaixo:
               </span>
             </th>
           </tr>
+        </table>
+
+        <form role="form" ng-submit="insertTrack()" class="vote-form">
+          <select class="form-control select-track" placeholder="Digite o nome de uma música..."
+                    ng-model="newTrack"></select>
+        </form>
+
+
+        <table class="table table-bordered table-striped">
           <tr ng-cloak ng-repeat="track in data.tracks">
             <td class="text-center">
               <button class="btn btn-xs"
                       ng-if="track.voters.indexOf(data.my_uuid) === -1"
-                      ng-click="insertVote(track.service_id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                      ng-click="insertVote(track.id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
               <button class="btn btn-xs"
                       ng-if="track.voters.indexOf(data.my_uuid) !== -1"
-                      ng-click="deleteVote(track.service_id)"><span class="glyphicon glyphicon-remove"></span></button>
+                      ng-click="deleteVote(track.id)"><span class="glyphicon glyphicon-remove"></span></button>
             </td>
             <td>{{ track.title }} - {{ track.artist }}</td>
             <td>{{ track.votes.length }}</td>
           </tr>
         </table>
-        
-        <form role="form" ng-submit="insertTrack()" class="vote-form">
-          <div class="form-group">
-            <select class="form-control select-track" placeholder="Digite o nome de uma música..."
-                    ng-model="newTrack"
-                    ng-enter="insertTrack()"></select>
-            <button class="btn btn-success pull-right"
-                    type="submit">Inserir</button>
-          </div>
-        </form>
 
         <footer>token do usuário: <code>{{ data.my_uuid }}</code></footer>
       </div>
@@ -99,6 +98,10 @@
       app.factory('FANOUT_REALM', function () {
         return '{{ FANOUT_REALM }}';
       });
+
+      var YOUTUBE_KEY = '{{ YOUTUBE_KEY }}';
+      var DEEZER_ICON = "{% static 'img/deezer.png' %}";
+      var YOUTUBE_ICON = "{% static 'img/youtube.png' %}";
     </script>
 
     <script src="{% static 'js/vote.js' %}"></script>

@@ -16,7 +16,9 @@ class SkipTrackAPIView(PlayerEndpointMixin, SkipTrackMixin,
     serializer_class = TrackSerializer
 
     def post(self, request, *args, **kwargs):
-        self.skip()
+        track = self.skip()
+        if track is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_200_OK)
 
 

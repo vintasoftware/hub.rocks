@@ -4,10 +4,14 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from model_utils.models import TimeStampedModel
+from model_utils import Choices
 import requests
 
 
 class Track(TimeStampedModel):
+    SERVICES = Choices(('deezer', 'Deezer'), ('youtube', 'YouTube'))
+    service = models.CharField(choices=SERVICES, default=SERVICES.deezer,
+                               max_length=20)
     service_id = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     artist = models.CharField(max_length=255)
@@ -17,7 +21,7 @@ class Track(TimeStampedModel):
 
     class Meta:
         verbose_name = _("Track")
-        unique_together = (("service_id", "establishment"),)
+        unique_together = (("service_id", "establishment", "service"),)
 
     def __unicode__(self):
         return u"Track {}: {} - {}".format(
@@ -28,29 +32,54 @@ class Track(TimeStampedModel):
     @classmethod
     def ordered_qs(cls, establishment):
         return (Track.objects.
-            filter(now_playing=False, votes__isnull=False,
-                   establishment=establishment).
-            annotate(votes_count=Count('votes')).
-            order_by('-votes_count', 'modified'))
+                filter(now_playing=False, votes__isnull=False,
+                       establishment=establishment).
+                annotate(votes_count=Count('votes')).
+                order_by('-votes_count', 'modified'))
 
     @classmethod
-    def fetch_and_save_track(cls, service_id, establishment):
-        response = requests.get(
-            'http://api.deezer.com/track/{0}'.format(service_id))
+    def _get_or_create_track(cls, title, artist, service, service_id,
+                             establishment):
+        track, __ = Track.objects.update_or_create(defaults={'title': title,
+                                                             'artist': artist},
+                                                   service=service,
+                                                   service_id=service_id,
+                                                   establishment=establishment)
+        return track
 
-        if response.status_code == 200:
-            response_json = response.json()
-            if 'error' not in response_json:
-                track, __ = Track.objects.update_or_create(
-                    defaults={'title': response_json['title'],
-                              'artist': response_json['artist']['name']},
-                    service_id=service_id,
-                    establishment=establishment)
-                return track
+    @classmethod
+    def fetch_and_save_track(cls, service, service_id, establishment):
+        kwargs = {'service': service, 'service_id': service_id,
+                  'establishment': establishment}
+        if service == cls.SERVICES.deezer:
+            response = requests.get(
+                'http://api.deezer.com/track/{0}'.format(service_id))
+
+            if response.status_code == 200:
+                response_json = response.json()
+                if 'error' not in response_json:
+                    kwargs.update({'title': response_json['title'],
+                                   'artist': response_json['artist']['name']})
+                else:
+                    raise ValueError("Deezer error")
             else:
-                raise ValueError("Deezer error")
+                raise ValueError("Deezer response != 200")
         else:
-            raise ValueError("Deezer response != 200")
+            response = requests.get(
+                'https://www.googleapis.com/youtube/v3/videos?part=snippet&'
+                'id={}&key={}'.format(service_id, settings.YOUTUBE_KEY))
+            if response.status_code == 200:
+                response_json = response.json()
+                if response_json['items']:
+                    snippet = response_json['items'][0]['snippet']
+                    kwargs.update({'title': snippet['title'],
+                                   'artist': snippet['channelTitle'] or
+                                   'unknown'})
+                else:
+                    raise ValueError("YouTube error")
+            else:
+                raise ValueError("YouTube response != 200")
+        return cls._get_or_create_track(**kwargs)
 
 
 class Vote(TimeStampedModel):

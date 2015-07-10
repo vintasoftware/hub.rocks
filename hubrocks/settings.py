@@ -17,6 +17,7 @@ TEST = 'test' in sys.argv
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+
 def base_dir_join(*args):
     return os.path.join(BASE_DIR, *args)
 
@@ -48,7 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'collectfast', # must be before 'staticfiles'
+    'collectfast',  # must be before 'staticfiles'
     'django.contrib.staticfiles',
     'compressor',
     'storages',
@@ -97,6 +98,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
 
     'core.context_processors.fanout_realm',
+    'core.context_processors.youtube_key',
 )
 
 ROOT_URLCONF = 'hubrocks.urls'
@@ -269,3 +271,6 @@ FANOUT_KEY = config('FANOUT_KEY', default=None)
 
 LASTFM_API_KEY = config('LASTFM_API_KEY', default=None)
 LASTFM_API_SECRET = config('LASTFM_API_SECRET', default=None)
+
+# Make sure it's a public API access key (Key for browser applications)
+YOUTUBE_KEY = config('YOUTUBE_KEY', default=None)
