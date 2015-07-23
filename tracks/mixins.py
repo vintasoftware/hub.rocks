@@ -106,6 +106,20 @@ class SkipTrackMixin(BroadCastTrackChangeMixin):
         track.now_playing = False
         track.save()
 
+    def safe_set_now_playing_track(self, track):
+        try:
+            with transaction.atomic():
+                # make sure we don't have a race condition and end up with
+                # two tracks now_playing
+                track.now_playing = True
+                track.played_on_random = True
+                track.save()
+                assert Track.objects.filter(now_playing=True,
+                                            establishment=self.establishment
+                                            ).count() == 1
+        except AssertionError:
+            pass
+
     def skip(self):
         try:
             current = Track.objects.get(now_playing=True,
@@ -147,14 +161,6 @@ class SkipTrackMixin(BroadCastTrackChangeMixin):
                     # first one.
                     track = qs.first()
         if track:
-            with transaction.atomic():
-                # make sure we don't have a race condition and end up with
-                # two tracks now_playing
-                track.now_playing = True
-                track.played_on_random = True
-                track.save()
-                assert Track.objects.filter(now_playing=True,
-                                            establishment=self.establishment
-                                            ).count() == 1
+            self.safe_set_now_playing_track(track)
             self.broadcast_track_changed(track)
             return track
