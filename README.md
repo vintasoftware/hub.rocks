@@ -18,3 +18,6 @@
 `python manage.py migrate`
 
 `python manage.py bower install`
+
+## Help
+If you have any questions or need help, please send an email to: contact@vinta.com.br
