@@ -15,5 +15,5 @@ urlpatterns = patterns('',
     url(r'^tracks/(?P<service>.+)/(?P<service_id>.+)/$',
         InsertTrackAPIView.as_view(), name='insert'),
     url(r'tracks/change-player-status/$', PlayingStatusAPIView.as_view(),
-        name='change-player-status'),
+        name='change-status'),
 )
