@@ -1,7 +1,3 @@
-
-
-import copy
-
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, mixins, status
@@ -11,13 +7,13 @@ from requests.exceptions import RequestException
 from player.serializers import PlayerStatusSerializer
 from tracks.serializers import (
     VoteSerializer, TrackListSerializer, TrackSerializer)
+from player.mixins import PlayingStatusMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from tracks.models import Track, Vote
 from tracks.mixins import (
     GetTokenMixin, SkipTrackMixin, SerializeTrackListMixin,
     BroadCastTrackChangeMixin, EstablishmentViewMixin)
-from player.models import PlayerStatus
 
 
 class VoteSkipNowPlayingAPIView(SkipTrackMixin, GetTokenMixin,
@@ -107,24 +103,13 @@ class VoteAPIView(BroadCastTrackChangeMixin,
 
 
 class PlayingStatusAPIView(EstablishmentViewMixin,
+                           PlayingStatusMixin, 
                            generics.RetrieveUpdateAPIView):
     serializer_class = PlayerStatusSerializer
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get_serializer(self, *args, **kwargs):
-        if kwargs.get('data'):
-            data = copy.copy(kwargs.get('data'))
-            data['establishment'] = self.establishment.pk
-            kwargs = copy.copy(kwargs)
-            kwargs['data'] = data
-        return super(PlayingStatusAPIView, self).get_serializer(*args, **kwargs)
-
     def put(self, request, *args, **kwargs):
         if self.establishment == request.user:
             return super(PlayingStatusAPIView, self).put(request, *args, **kwargs)
         return self.http_method_not_allowed(request, *args, **kwargs)
-
-    def get_object(self):
-        return PlayerStatus.objects.get_or_create(
-            establishment=self.establishment)[0]
