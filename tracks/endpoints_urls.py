@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 
 from tracks.endpoints import (
     TrackListAPIView, VoteAPIView,
-    VoteSkipNowPlayingAPIView, InsertTrackAPIView)
+    VoteSkipNowPlayingAPIView, InsertTrackAPIView, PlayingStatusAPIView)
 
 
 urlpatterns = patterns('',
@@ -14,4 +14,6 @@ urlpatterns = patterns('',
         name='now-playing-skip'),
     url(r'^tracks/(?P<service>.+)/(?P<service_id>.+)/$',
         InsertTrackAPIView.as_view(), name='insert'),
+    url(r'tracks/change-player-status/$', PlayingStatusAPIView.as_view(),
+        name='change-status'),
 )

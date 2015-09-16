@@ -8,7 +8,8 @@ from tracks.mixins import SkipTrackMixin
 from tracks.models import Track
 from tracks.serializers import TrackSerializer
 
-from player.mixins import PlayerEndpointMixin
+from player.mixins import PlayerEndpointMixin, PlayingStatusMixin
+from player.serializers import PlayerStatusSerializer
 
 
 class SkipTrackAPIView(PlayerEndpointMixin, SkipTrackMixin,
@@ -29,3 +30,9 @@ class NowPlayingAPIView(PlayerEndpointMixin,
     def get_object(self, *args, **kwargs):
         return get_object_or_404(Track, now_playing=True,
                                  establishment=self.establishment)
+
+
+class PlayingStatusAPIView(PlayerEndpointMixin,
+                           PlayingStatusMixin,
+                           generics.UpdateAPIView):
+    serializer_class = PlayerStatusSerializer

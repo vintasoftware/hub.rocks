@@ -56,6 +56,10 @@ var onYouTubeIframeAPIReady = null;
           popNextAndPlay();
         }
       });
+
+      faye_client.subscribe('/player-status-' + ESTABLISHMENT, function (data) {
+        handleStatusChange(data.playing);
+      });
     } else {
       console.log("Running without Faye");
     }
@@ -65,6 +69,7 @@ var onYouTubeIframeAPIReady = null;
   var YoutubeBackend = (function () {
     var ready = false;
     var player = null;
+    var playing = false;
 
     // this needs to be exposed
     onYouTubeIframeAPIReady = function() {
@@ -82,6 +87,7 @@ var onYouTubeIframeAPIReady = null;
 
       function onPlayerStateChange(event) {
         if (event.data == YT.PlayerState.ENDED) {
+          playing = false;
           skipTrack().fail(popNextAndPlay);
         }
       }
@@ -89,26 +95,43 @@ var onYouTubeIframeAPIReady = null;
 
     var playTrack = function (track) {
       player.loadVideoById(track.service_id);
+      playing = true;
     };
 
     var stopNowPlaying = function () {
       player.stopVideo();
+      playing = false;
     };
 
     var isReady = function () {
       return ready;
     };
 
+    var resumeIfPaused = function () {
+      if (playing) {
+        player.playVideo();
+      }
+    };
+
+    var pauseIfPlaying = function () {
+      if (playing) {
+        player.pauseVideo();
+      }
+    };
+
     return {
       playTrack: playTrack,
       stopNowPlaying: stopNowPlaying,
-      isReady: isReady
+      isReady: isReady,
+      resumeIfPaused: resumeIfPaused,
+      pauseIfPlaying: pauseIfPlaying,
     };
   }());
 
 
   var DeezerBackend = (function() {
     var ready = false;
+    var playing = false;
 
     DZ.init({
         appId  : '8',
@@ -123,6 +146,7 @@ var onYouTubeIframeAPIReady = null;
               ready = true;
 
               DZ.Event.subscribe('track_end', function (currentIndex) {
+                playing = false;
                 skipTrack().fail(popNextAndPlay);
               });
             }
@@ -132,9 +156,11 @@ var onYouTubeIframeAPIReady = null;
 
     var playTrack = function (track) {
       DZ.player.playTracks([track.service_id]);
+      playing = true;
     };
 
     var stopNowPlaying = function () {
+      playing = false;
       DZ.player.pause();
     };
 
@@ -142,20 +168,49 @@ var onYouTubeIframeAPIReady = null;
       return ready;
     };
 
+    var resumeIfPaused = function () {
+      if (playing) {
+        DZ.player.play();
+      }
+    };
+
+    var pauseIfPlaying = function () {
+      if (playing) {
+        DZ.player.pause();
+      }
+    };
+
     return {
       playTrack: playTrack,
       stopNowPlaying: stopNowPlaying,
-      isReady: isReady
+      isReady: isReady,
+      resumeIfPaused: resumeIfPaused,
+      pauseIfPlaying: pauseIfPlaying
     };
   }());
 
   function playTrack(track) {
+    $.ajax({
+      method: "PUT",
+      url: API_URL + '/player/change-status/',
+      data: { playing: true }
+    });
     if (track.service == 'deezer') {
       YoutubeBackend.stopNowPlaying();
       DeezerBackend.playTrack(track);
     } else {
       DeezerBackend.stopNowPlaying();
       YoutubeBackend.playTrack(track);
+    }
+  }
+
+  function handleStatusChange(isPlaying) {
+    if (isPlaying) {
+      YoutubeBackend.resumeIfPaused();
+      DeezerBackend.resumeIfPaused();
+    } else {
+      YoutubeBackend.pauseIfPlaying();
+      DeezerBackend.pauseIfPlaying();
     }
   }
 

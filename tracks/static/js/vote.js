@@ -2,6 +2,15 @@
   var app = angular.module('hubrocks', [
     'LocalStorageModule', 'uuid4', 'hubrocks.const', 'faye']);
 
+  app.config(
+    ['$httpProvider',
+      function ($httpProvider, RestangularProvider){
+        $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+        $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+        $httpProvider.defaults.withCredentials = true;
+      }
+    ]);
+
   app.factory('my_uuid', ['localStorageService', 'uuid4',
     function (localStorageService, uuid4) {
       var my_uuid = localStorageService.get('my_uuid');
@@ -38,9 +47,20 @@
       };
       fetchTracks();
 
+      var fetchPlayerStatus = function () {
+        $http.get(API_URL + '/tracks/change-player-status/')
+          .success(function (playerStatus) {
+            angular.extend(data, playerStatus);
+          });
+      };
+      fetchPlayerStatus();
+
       if (Faye) {
         Faye.subscribe('/tracks-' + ESTABLISHMENT, function (newData) {
           angular.extend(data, newData);
+        });
+        Faye.subscribe('/player-status-' + ESTABLISHMENT, function (playerStatus) {
+          angular.extend(data, playerStatus);
         });
       } else {
         console.log("Running without Faye");
@@ -65,12 +85,18 @@
                    {'track_id': track_id});
       };
 
+      var changePlayerStatus = function (status) {
+        $http.put(API_URL + '/tracks/change-player-status/',
+                  {'playing': status});
+      };
+
       return {
         data: data,
         insertVote: insertVote,
         insertTrack: insertTrack,
         deleteVote: deleteVote,
         voteSkip: voteSkip,
+        changePlayerStatus: changePlayerStatus,
       };
     }
   ]);
@@ -81,7 +107,8 @@
       $scope.insertVote = HubrocksAPI.insertVote;
       $scope.deleteVote = HubrocksAPI.deleteVote;
       $scope.voteSkip = HubrocksAPI.voteSkip;
-
+      $scope.changePlayerStatus = HubrocksAPI.changePlayerStatus;
+      $scope.CAN_PLAY_PAUSE = CAN_PLAY_PAUSE;
       $scope.$watch('newTrack', function (newTrack){
         if (newTrack) {
           HubrocksAPI.insertTrack(newTrack);

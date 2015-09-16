@@ -1,16 +1,19 @@
-
 from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from requests.exceptions import RequestException
 
+from player.serializers import PlayerStatusSerializer
 from tracks.serializers import (
     VoteSerializer, TrackListSerializer, TrackSerializer)
+from player.mixins import PlayingStatusMixin
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication
 from tracks.models import Track, Vote
 from tracks.mixins import (
     GetTokenMixin, SkipTrackMixin, SerializeTrackListMixin,
-    BroadCastTrackChangeMixin)
+    BroadCastTrackChangeMixin, EstablishmentViewMixin)
 
 
 class VoteSkipNowPlayingAPIView(SkipTrackMixin, GetTokenMixin,
@@ -97,3 +100,16 @@ class VoteAPIView(BroadCastTrackChangeMixin,
         if 200 <= response.status_code < 300:
             self.broadcast_list_changed()
         return response
+
+
+class PlayingStatusAPIView(EstablishmentViewMixin,
+                           PlayingStatusMixin, 
+                           generics.RetrieveUpdateAPIView):
+    serializer_class = PlayerStatusSerializer
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request, *args, **kwargs):
+        if self.establishment == request.user:
+            return super(PlayingStatusAPIView, self).put(request, *args, **kwargs)
+        return self.http_method_not_allowed(request, *args, **kwargs)

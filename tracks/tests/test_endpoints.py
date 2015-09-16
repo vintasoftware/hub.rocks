@@ -1,5 +1,6 @@
 
 from django.core.urlresolvers import reverse
+from django.contrib.auth import get_user_model
 
 from rest_framework import status
 from model_mommy import mommy
@@ -8,6 +9,9 @@ from mock import patch
 from tracks.models import Track
 from tracks.endpoints import VoteAPIView, InsertTrackAPIView
 from tracks.tests.utils import TrackAPITestCase
+from player.models import PlayerStatus
+
+User = get_user_model()
 
 
 class VoteSkipNowPlayingAPIViewTestCase(TrackAPITestCase):
@@ -122,3 +126,48 @@ class InsertTrackAndVoteAPIViewTestCase(TrackAPITestCase):
         self.assertEqual(self.track.votes.count(), 0)
         self.assertEqual(mock1.call_count, 1)
         self.assertEqual(mock2.call_count, 1)
+
+
+class PlayingStatusAPIViewTestCase(TrackAPITestCase):
+
+    def setUp(self):
+        super(PlayingStatusAPIViewTestCase, self).setUp()
+        self.client.login(username='establishment', password='bar')
+        self.url = reverse('api:change-status',
+                           kwargs={'establishment': self.establishment.username})
+
+    def test_put_new(self):
+        self.assertEqual(PlayerStatus.objects.count(), 0)
+        response = self.client.put(self.url, {'playing': False})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(PlayerStatus.objects.count(), 1)
+
+    def test_put_existing(self):
+        ps = PlayerStatus.objects.create(establishment=self.establishment)
+        self.assertFalse(ps.playing)
+
+        response = self.client.put(self.url, {'playing': True})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(PlayerStatus.objects.get(id=ps.id).playing)
+        self.assertEqual(PlayerStatus.objects.count(), 1)
+
+    def test_without_login(self):
+        self.client.logout()
+        response = self.client.put(self.url,
+                                   {'establishment': self.establishment.id,
+                                    'playing': False})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(PlayerStatus.objects.count(), 0)
+
+    def test_another_establishment(self):
+        ps = PlayerStatus.objects.create(establishment=self.establishment)
+        self.assertFalse(ps.playing)
+        User.objects.create_user(username='foo', email='email@gmail.com',
+                                 password='bar')
+        self.client.login(username='foo', password='bar')
+        response = self.client.put(self.url,
+                                   {'establishment': self.establishment.id,
+                                    'playing': True})
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertFalse(PlayerStatus.objects.get(id=ps.id).playing)

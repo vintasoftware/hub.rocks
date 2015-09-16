@@ -26,7 +26,12 @@
             <th></th>
             <th colspan="2">
               <span ng-cloak ng-if="data.now_playing.id">
-                <span class="glyphicon glyphicon-play"></span> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
+                <span ng-cloak ng-if="!CAN_PLAY_PAUSE">
+                  <span class="glyphicon glyphicon-play"></span> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
+                </span>
+                <span ng-cloak ng-if="CAN_PLAY_PAUSE">
+                  <a ng-click="changePlayerStatus(!data.playing)"><span class="glyphicon" ng-class="!data.playing ? 'glyphicon-play' : 'glyphicon-pause'"></span></a> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
+                </span>
                 <button class="btn btn-xs pull-right"
                         ng-cloak
                         ng-class="{disabled: data.now_playing.skippers.indexOf(data.my_uuid) !== -1,
@@ -102,6 +107,12 @@
       var YOUTUBE_KEY = '{{ YOUTUBE_KEY }}';
       var DEEZER_ICON = "{% static 'img/deezer.png' %}";
       var YOUTUBE_ICON = "{% static 'img/youtube.png' %}";
+      {% if can_play_pause %}
+      {# this is to avoid multiple verbatim #}
+      var CAN_PLAY_PAUSE = true;
+      {% else %}
+      var CAN_PLAY_PAUSE = false;
+      {% endif %}
     </script>
 
     <script src="{% static 'js/vote.js' %}"></script>
