@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class Account(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
-    username = models.CharField(max_length=255, unique=True)
+    username = models.CharField(max_length=255, unique=True, verbose_name='station name')
 
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
