@@ -9,30 +9,19 @@
           <h1>Bem-vindo!</h1>
           <p>Você acabou de criar sua estação no Hub.Rocks!</p>
           <div>
-            <p><strong>1º Passo</strong>: Abra o link abaixo na sua festa ou trabalho</p>
+            <p><strong>1º Passo</strong>: Abra o link abaixo na sua festa ou trabalho.</p>
             <input type="text" class="input-lg" value="{{ request.get_host }}{% url 'player:player' %}" disabled>
-            <a href="{% url 'player:player' %}"><button class="btn btn-primary pull-right">Ir para o player</button></a>
+            <a href="{% url 'player:player' %}"><button class="btn btn-primary"><i class="fa fa-youtube-play"></i>Ir para o player</button></a>
           </div>
           <div>
             <p><strong>2º Passo</strong>: Compartilhe o link da sua estação com seus amigos.</p>
             <input type="text" class="input-lg" value="{{ request.get_host }}{% url 'tracks:vote' request.user %}" disabled>
-            <div class="fb-share-button pull-right" data-href="{% url 'tracks:vote' request.user %}" data-layout="button"></div>
+            <a target="_blank" href="http://www.facebook.com/share.php?u={{ request.get_host }}{% url 'tracks:vote' request.user %}&title=HubRocks"><button class="btn btn-facebook"><i class="fa fa-facebook-official"></i>Compartilhar</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-{% endblock %}
-
-{% block js %}
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v2.4&appId=614285171947206";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
 {% endblock %}
 
 {% block css %}
