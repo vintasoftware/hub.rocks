@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="jumbotron">
+          <h1>Bem-vindo!</h1>
+          <p>Você acabou de criar sua estação no Hub.Rocks!</p>
+          <div>
+            <p><strong>1º Passo</strong>: Abra o link abaixo na sua festa ou trabalho.</p>
+            <input type="text" class="input-lg" value="{{ request.get_host }}{% url 'player:player' %}" disabled>
+            <a href="{% url 'player:player' %}"><button class="btn btn-primary"><i class="fa fa-youtube-play"></i>Ir para o player</button></a>
+          </div>
+          <div>
+            <p><strong>2º Passo</strong>: Compartilhe o link da sua estação com seus amigos.</p>
+            <input type="text" class="input-lg" value="{{ request.get_host }}{% url 'tracks:vote' request.user %}" disabled>
+            <a target="_blank" href="http://www.facebook.com/share.php?u={{ request.get_host }}{% url 'tracks:vote' request.user %}&title=HubRocks"><button class="btn btn-facebook"><i class="fa fa-facebook-official"></i>Compartilhar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" type="text/x-scss" href="{% static 'sass/accounts.scss' %}">
+{% endblock %}
