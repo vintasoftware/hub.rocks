@@ -55,6 +55,7 @@ INSTALLED_APPS = (
     'storages',
     'djangobower',
     'rest_framework',
+    'widget_tweaks',
 
     'core',
     'tracks',

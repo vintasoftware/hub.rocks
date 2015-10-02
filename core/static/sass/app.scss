@@ -1,0 +1,49 @@
+$navbar-height: 60px;
+
+.content-container {
+  margin-top: $navbar-height + 20px;
+}
+
+.navbar {
+  border-width: 0 0 4px 0;
+  h4 {
+    color: white;
+    margin-top: 11px;
+  }
+}
+
+footer {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  margin-top: 100px;
+  color: #767676;
+  text-align: center;
+  border-top: 1px solid #e5e5e5;
+
+  .bs-docs-social {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .bs-docs-social-buttons {
+    display: inline-block;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+
+    li {
+      display: inline-block;
+      padding: 5px 8px;
+      line-height: 1;
+
+      .github-btn {
+        overflow: hidden;
+        border: 0;
+      }
+    }
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+}

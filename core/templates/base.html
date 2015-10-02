@@ -1,0 +1,108 @@
+{% load staticfiles %}
+{% load compress %}
+
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <!-- Based on: https://github.com/xenith/django-base-template -->
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>{% block page_title %}{% endblock %} | Hub.Rocks</title>
+  <meta name="description" content="{% block meta_description %}{% endblock %}">
+  <meta name="author" content="{% block meta_author %}{% endblock %}">
+
+  <meta name="viewport" content="width=device-width">
+
+  <link rel="icon" type="image/png" href="">
+
+  {% block meta %}
+  {% endblock %}
+
+  <!-- Bootstrap CDN -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/simplex/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+  {% compress css %}
+  <link rel="stylesheet" type="text/x-scss" href="{% static 'sass/app.scss' %}">
+
+  {% block css %}{% endblock %}
+  {% endcompress %}
+
+  <!--Start of Google Analytics Script-->
+  <script>
+  </script>
+  <!--End of Google Analytics Script-->
+</head>
+<body>
+{% block body %}
+  <!--[if lt IE 7]>
+    <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+  {% block header %}
+    <!-- Headline -->
+    <header class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-music"></span> Hub.Rocks</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="http://www.vinta.com.br/" target="_blank">by Vinta Software Studio</a></li>
+        </ul>
+      </div>
+    </header>
+  {% endblock %}
+
+  <!-- Main -->
+  <div role="main" class="container content-container">
+    {% block main %}
+      <div class="content">{% block content %}{% endblock %}</div>
+    {% endblock %}
+  </div>
+
+  <footer>
+    {% block footer %}
+      <div class="container">
+        <div class="bs-docs-social">
+          <ul class="bs-docs-social-buttons">
+            <li>
+              <iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user=vintasoftware&amp;repo=hub.rocks&amp;type=watch&amp;count=true" width="100" height="20" title="Star on GitHub"></iframe>
+            </li>
+            <li>
+              <iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user=vintasoftware&amp;repo=hub.rocks&amp;type=fork&amp;count=true" width="102" height="20" title="Fork on GitHub"></iframe>
+            </li>
+            <li class="follow-btn">
+              <a class="twitter-follow-button" href="https://twitter.com/vintasoftware">Follow @vintasoftware</a>
+            </li>
+            <li class="tweet-btn">
+              <a class="twitter-share-button" href="https://twitter.com/intent/tweet" data-text="Check out Hub.Rocks:" data-url="http://hub.rocks">Tweet</a>
+            </li>
+          </ul>
+        </div>
+
+        <p>Designed and built by <a href="https://twitter.com/flaviojuvenal" target="_blank">@flaviojuvenal</a> at <a href="https://twitter.com/vintasoftware" target="_blank">@vintasoftware</a>.</p>
+        <p>Code licensed under <a rel="license" href="" target="_blank">MIT</a>, content under <a rel="license" href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.</p>
+      </div>
+    {% endblock footer %}
+  </footer>
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL -->
+  {% block cdn_js %}
+  {% endblock cdn_js %}
+
+
+  <!-- scripts concatenated and minified via django-compressor -->
+  {% compress js %}
+  {% block js %}{% endblock js %}
+
+  {% endcompress %}
+  <!-- end scripts -->
+{% endblock %}
+</body>
+</html>

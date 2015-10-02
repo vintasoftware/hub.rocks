@@ -1,0 +1,43 @@
+$computer: "(min-width: 632px)";
+$tablet-mobile: "(max-width: 632px)";
+
+.jumbotron {
+
+    div {
+        padding: 1em;
+    }
+
+    input {
+        width: 20em;
+    }
+
+    button {
+        height: 50px;
+        width: 150px;
+    }
+
+    i {
+        margin-right: 1em;
+    }
+
+    .btn-facebook {
+        background-color: #3b5998;
+        color: #fff;
+    }
+
+    @media #{$computer} {
+
+        button {
+            margin-bottom: 9px;
+            margin-left: 4em;
+        }
+    }
+
+    @media #{$tablet-mobile} {
+
+        button {
+            margin-top: 1em;
+            margin-left: 7em;
+        }
+    }
+}
