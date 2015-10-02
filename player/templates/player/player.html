@@ -21,7 +21,9 @@
   </head>
   <body>
     <div id="dz-root"></div>
-    <div id="deezer-player" style="width:100%;" align="center"></div>
+    {% if establishment == 'vinta' %}
+      <div id="deezer-player" style="width:100%;" align="center"></div>
+    {% endif %}
     <div id="youtube-player"></div>
     <script src="{% static 'js/player.js' %}"></script>
   </body>
