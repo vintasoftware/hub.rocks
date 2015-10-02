@@ -47,38 +47,43 @@ $(document).ready(function () {
 
       var results = [];
 
-      $.ajax({
-        url: 'http://api.deezer.com/search/track?output=jsonp&q=' +
-          encodeURIComponent(query),
-        dataType: 'jsonp',
-        error: function() {
-          results = [];
-        },
-        success: function (json) {
-          results = transformDeezerTracksJson(json.data.slice(0, 15));
-          if (YOUTUBE_KEY) {
-            $.ajax({
-              url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&key=' +
-                YOUTUBE_KEY + '&q=' + encodeURIComponent(query),
-              dataType: 'jsonp',
-              error: function () {
-              },
-              success: function (json) {
-                results = results.concat(transformYoutubeJson(json.items));
-              },
-              complete: function () {
-                callback(results);
-              }
-            });
-          } else {
+      if (YOUTUBE_KEY) {
+        $.ajax({
+          url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&key=' +
+            YOUTUBE_KEY + '&q=' + encodeURIComponent(query),
+          dataType: 'jsonp',
+          error: function () {
+          },
+          success: function (json) {
+            results = results.concat(transformYoutubeJson(json.items));
+          },
+          complete: function () {
             callback(results);
           }
-        }
-      });
+        });
+      }
+
+      if (ESTABLISHMENT === 'vinta') {
+        $.ajax({
+          url: 'http://api.deezer.com/search/track?output=jsonp&q=' +
+            encodeURIComponent(query),
+            dataType: 'jsonp',
+            error: function() {
+              results = [];
+            },
+            success: function(json) {
+              results = transformDeezerTracksJson(json.data.slice(0, 15));
+              callback(results);
+            }
+        });
+      } else {
+        callback(results);
+      }
 
     },
     render: {
       option: function(track, escape) {
+        console.log(track);
         return '<div class="track-option">' +
           '<img src="' + track.cover  + '" >' +
           '<div class="title">' +
