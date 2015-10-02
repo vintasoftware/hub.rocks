@@ -6,8 +6,8 @@ from accounts.models import Account
 
 
 class AccountCreateForm(forms.ModelForm):
-
     password2 = forms.CharField(widget=forms.PasswordInput())
+    password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
         model = Account
@@ -16,7 +16,6 @@ class AccountCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AccountCreateForm, self).__init__(*args, **kwargs)
-        self.fields['password'].widget = forms.PasswordInput()
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
 
