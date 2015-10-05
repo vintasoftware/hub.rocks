@@ -1,22 +1,22 @@
+{% extends 'base.html' %}
 {% load compress %}
 {% load staticfiles %}
 
-<!DOCTYPE html>
-<html ng-app="hubrocks">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% block ng_app %}ng-app="hubrocks"{% endblock %}
+{% block ng_controller %}ng-controller="HubrocksCtrl"{% endblock %}
 
-    <title>hub.rocks</title>
+<!--     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+
+    {% block page_title%}hub.rocks{% endblock %}
 
     {% compress css %}
       <link rel="stylesheet" type="text/x-scss" href="{% static 'bootstrap-sass/assets/stylesheets/_bootstrap.scss' %}">
       <link rel="stylesheet" type="text/css" href="{% static 'selectize/dist/css/selectize.bootstrap3.css' %}">
       <link rel="stylesheet" type="text/x-scss" href="{% static 'sass/vote.scss' %}">
     {% endcompress %}
-  </head>
 
-  <body ng-controller="HubrocksCtrl">
+    {% block content %}
     {% verbatim %}
     <div class="container">
       <div class="col-xs-12">
@@ -77,6 +77,7 @@
       </div>
     </div>
     {% endverbatim %}
+    {% endblock %}
 
     {% compress js %}
     <script type="text/javascript" src="{% static 'jquery/dist/jquery.js' %}"></script>
@@ -119,5 +120,3 @@
     <script src="{% static 'js/vote.js' %}"></script>
     <script src="{% static 'js/select-track.js' %}"></script>
     {% endcompress %}
-  </body>
-</html>
