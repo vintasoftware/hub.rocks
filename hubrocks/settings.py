@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'djangobower',
     'rest_framework',
     'widget_tweaks',
+    'authtools',
 
     'core',
     'tracks',
@@ -260,6 +261,9 @@ LOGGING = {
         }
     }
 }
+
+# Authtools
+AUTH_USER_MODEL = 'accounts.Account'
 
 
 if TEST:

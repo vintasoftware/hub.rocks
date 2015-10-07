@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">
+        <div class="panel panel-primary">
+          <div class="panel-heading"><h3 class="panel-title">Login</h3></div>
+            <div class="panel-body">
+              <form method="post">
+                {% csrf_token %}
+                <div class="form-group required {% if form.username.errors %}has-error{% endif %}">
+                  <label class="control-label">Station Name*</label>
+                  <div>
+                    {{ form.username|add_class:'form-control required input-lg'}}
+                  </div>
+                  {% for error in form.username.errors %}
+                    <label class="label label-primary">{{ error }}</span>
+                  {% endfor %}
+                </div>
+                <div class="form-group required {% if form.password.errors %}has-error{% endif %}">
+                  <label class="text required control-label" data-placement="right" data-toggle="tooltip" data-trigger="hover">
+                    Password*
+                  </label>
+                  <div>
+                    {{ form.password|add_class:'form-control required input-lg'}}
+                  </div>
+                  {% for error in form.password.errors %}
+                    <label class="label label-primary">{{ error }}</span>
+                  {% endfor %}
+                </div>
+                <button class="btn btn-success pull-right" type="submit">Entrar</button>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
