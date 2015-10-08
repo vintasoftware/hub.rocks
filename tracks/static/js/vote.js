@@ -109,6 +109,7 @@
       $scope.voteSkip = HubrocksAPI.voteSkip;
       $scope.changePlayerStatus = HubrocksAPI.changePlayerStatus;
       $scope.CAN_PLAY_PAUSE = CAN_PLAY_PAUSE;
+      $scope.ESTABLISHMENT = ESTABLISHMENT;
       $scope.$watch('newTrack', function (newTrack){
         if (newTrack) {
           HubrocksAPI.insertTrack(newTrack);

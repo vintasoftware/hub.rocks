@@ -1,10 +1,48 @@
-body > .container {
-  max-width: 768px;
-}
-
 footer {
   margin-top: 50px;
   font-size: 0.75em;
+}
+
+.panel-body {
+  .well {
+    font-size: large;
+
+    img {
+      margin-right: 2em;
+    }
+
+    .glyphicon {
+      font-size: xx-large;
+    }
+
+    @media (max-width: 990px) {
+      .col-md-7 {
+        padding: 1em;
+      }
+    }
+  }
+
+  table {
+    button {
+      margin-top: 7px;
+
+      span {
+        left: 1px;
+        top: 2px;
+      }
+    }
+  }
+}
+
+.selectize-input {
+
+  height: 53px;
+  padding-top: 1em;
+  margin-top: 1em;
+
+  input {
+    font-size: larger;
+  }
 }
 
 .selectize-control.select-track .selectize-dropdown {
