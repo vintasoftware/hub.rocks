@@ -57,6 +57,13 @@
         </div>
         <div class="navbar-collapse collapse" id="navbar-main">
           <ul class="nav navbar-nav navbar-right">
+            {% if request.user.is_authenticated %}
+              <li><a href="{% url 'player:player' %}">Meu Player</a></li> 
+              <li><a href="{% url 'tracks:vote' request.user %}">Minha Estação</a></li> 
+              <li><a href="{% url 'accounts:logout' %}">Logout</a></li> 
+            {% else %}
+              <li><a href="{% url 'accounts:login' %}">Login</a></li>
+            {% endif %}
             <li><a href="http://www.vinta.com.br/" target="_blank">by Vinta Software Studio</a></li>
           </ul>
         </div>
