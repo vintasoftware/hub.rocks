@@ -155,14 +155,17 @@ var onYouTubeIframeAPIReady = null;
 
 
     var playTrack = function (track) {
-      if (ESTABLISHMENT === 'vinta'){
-        DZ.player.playTracks([track.service_id]);
-        playing = true;
-      }
+      DZ.player.playTracks([track.service_id]);
+      playing = true;
     };
 
     var stopNowPlaying = function () {
-      if (ESTABLISHMENT === 'vinta'){
+      playing = false;
+      DZ.player.pause();
+    };
+
+    var stopIfPlaying = function () {
+      if (playing) {
         playing = false;
         DZ.player.pause();
       }
@@ -187,6 +190,7 @@ var onYouTubeIframeAPIReady = null;
     return {
       playTrack: playTrack,
       stopNowPlaying: stopNowPlaying,
+      stopIfPlaying: stopIfPlaying,
       isReady: isReady,
       resumeIfPaused: resumeIfPaused,
       pauseIfPlaying: pauseIfPlaying
@@ -203,7 +207,7 @@ var onYouTubeIframeAPIReady = null;
       YoutubeBackend.stopNowPlaying();
       DeezerBackend.playTrack(track);
     } else {
-      DeezerBackend.stopNowPlaying();
+      DeezerBackend.stopIfPlaying();
       YoutubeBackend.playTrack(track);
     }
   }
@@ -278,18 +282,10 @@ var onYouTubeIframeAPIReady = null;
         if (YoutubeBackend.isReady()) {
           console.log("youtube ready!");
         }
-        if (ESTABLISHMENT === 'vinta') {
-          if (!DeezerBackend.isReady() || !YoutubeBackend.isReady()) {
-            waitForPlayersReady();
-          } else {
-            tryToContinuePlaying();
-          }
+        if ((ESTABLISHMENT === "vinta" && !DeezerBackend.isReady()) || !YoutubeBackend.isReady()) {
+          waitForPlayersReady();
         } else {
-          if (!YoutubeBackend.isReady()) {
-            waitForPlayersReady();
-          } else {
-            tryToContinuePlaying();
-          }
+          tryToContinuePlaying();
         }
       }, 3000);
     })();
