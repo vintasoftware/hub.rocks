@@ -1,30 +1,37 @@
+{% extends 'base.html' %}
+{% load compress %}
 {% load staticfiles %}
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
+{% block page_title %}hub.rocks player{% endblock %}
 
-    <title>hub.rocks player</title>
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-2">
+         <div id="dz-root"></div>
+          {% if establishment == 'vinta' %}
+            <div id="deezer-player" style="width:100%;" align="center"></div>
+          {% endif %}
+          <div id="youtube-player"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.ESTABLISHMENT = '{{ establishment}}';
+    window.API_URL = '/api';
+    window.FANOUT_REALM = '{{ FANOUT_REALM }}';
+  </script>
+{% endblock %}
 
-    <script src="{% static 'jquery/dist/jquery.js' %}"></script>
-    <script src="{% static 'jquery.cookie/jquery.cookie.js' %}"></script>
-    <script src="http://cdn-files.deezer.com/js/min/dz-v00202681.js"></script>
-    <script type="text/javascript" src="{% static 'faye/include.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/youtube_player.js' %}"></script>
 
-    <script>
-      window.ESTABLISHMENT = '{{ establishment}}';
-      window.API_URL = '/api';
-      window.FANOUT_REALM = '{{ FANOUT_REALM }}';
-    </script>
-  </head>
-  <body>
-    <div id="dz-root"></div>
-    {% if establishment == 'vinta' %}
-      <div id="deezer-player" style="width:100%;" align="center"></div>
-    {% endif %}
-    <div id="youtube-player"></div>
-    <script src="{% static 'js/player.js' %}"></script>
-  </body>
-</html>
+{% block cdn_js %}
+  <script src="http://cdn-files.deezer.com/js/min/dz-v00202681.js"></script>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'jquery/dist/jquery.js' %}"></script>
+  <script src="{% static 'jquery.cookie/jquery.cookie.js' %}"></script>
+  <script type="text/javascript" src="{% static 'faye/include.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/youtube_player.js' %}"></script>
+  <script src="{% static 'js/player.js' %}"></script>
+{% endblock %}

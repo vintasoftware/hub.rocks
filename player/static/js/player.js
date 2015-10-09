@@ -155,13 +155,17 @@ var onYouTubeIframeAPIReady = null;
 
 
     var playTrack = function (track) {
-      DZ.player.playTracks([track.service_id]);
-      playing = true;
+      if (ESTABLISHMENT === 'vinta'){
+        DZ.player.playTracks([track.service_id]);
+        playing = true;
+      }
     };
 
     var stopNowPlaying = function () {
-      playing = false;
-      DZ.player.pause();
+      if (ESTABLISHMENT === 'vinta'){
+        playing = false;
+        DZ.player.pause();
+      }
     };
 
     var isReady = function () {
@@ -274,10 +278,18 @@ var onYouTubeIframeAPIReady = null;
         if (YoutubeBackend.isReady()) {
           console.log("youtube ready!");
         }
-        if (!DeezerBackend.isReady() || !YoutubeBackend.isReady()) {
-          waitForPlayersReady();
+        if (ESTABLISHMENT === 'vinta') {
+          if (!DeezerBackend.isReady() || !YoutubeBackend.isReady()) {
+            waitForPlayersReady();
+          } else {
+            tryToContinuePlaying();
+          }
         } else {
-          tryToContinuePlaying();
+          if (!YoutubeBackend.isReady()) {
+            waitForPlayersReady();
+          } else {
+            tryToContinuePlaying();
+          }
         }
       }, 3000);
     })();
