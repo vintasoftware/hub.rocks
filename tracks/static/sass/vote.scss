@@ -3,33 +3,53 @@ footer {
   font-size: 0.75em;
 }
 
-.panel-body {
-  .well {
-    font-size: large;
+.player-img {
+  text-align: center;
+}
 
-    img {
-      margin-right: 2em;
-    }
+.playing-now {
+  margin: 10px 0px;
 
-    .glyphicon {
-      font-size: xx-large;
-    }
-
-    @media (max-width: 990px) {
-      .col-md-7 {
-        padding: 1em;
-      }
-    }
+  a {
+    cursor: pointer;
+    float: left;
+    margin-right: 35px;
+    font-size: 40px;
+    margin-top: 9px;
   }
 
-  table {
-    button {
-      margin-top: 7px;
+  span {
+    font-size: 40px;
+  }
 
-      span {
-        left: 1px;
-        top: 2px;
-      }
+  h4 {
+    line-height: 27px;
+  }
+}
+
+.skip-button {
+  font-size: 24px;
+  margin-top: 20px;
+  padding-left: 16px;
+
+  i {
+    vertical-align: text-bottom;
+    float: left;
+    margin-top: 4px;
+  }
+
+  .skip-number {
+    margin-left: 0.5em;
+  }
+}
+
+table {
+  button {
+    margin-top: 7px;
+
+    span {
+      left: 1px;
+      top: 2px;
     }
   }
 }

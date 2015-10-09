@@ -20,34 +20,28 @@
     <div class="container">
       <div class="row">
         <div class="col-xs-12">
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 ng-cloak class="panel-title">Estação {{ ESTABLISHMENT }}</h3>
-            </div>
-            <div class="panel-body">
                 <div class="well">
                     <span ng-cloak ng-if="data.now_playing.id">
                       <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-2 player-img">
                           <img src="https://i.ytimg.com/vi/{{ data.now_playing.service_id }}/default.jpg">
-                              <a ng-cloak ng-if="CAN_PLAY_PAUSE" ng-click="changePlayerStatus(!data.playing)"><span class="glyphicon" ng-class="!data.playing ? 'glyphicon-play' : 'glyphicon-pause'"></span></a>
                         </div>
-                          <div class="col-md-7">
-                            Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
-                          </div>
+                        <div class="col-md-8 playing-now">
+                          <a class="pause-button" ng-cloak ng-if="CAN_PLAY_PAUSE" ng-click="changePlayerStatus(!data.playing)"><span class="glyphicon" ng-class="!data.playing ? 'glyphicon-play' : 'glyphicon-pause'"></span></a>
+                          <h4>Tocando agora:<br><b>{{ data.now_playing.title }} - {{ data.now_playing.artist }}</b></h4>
+                        </div>
                           </span>
                         <div class="col-md-2">
-                          <button class="btn btn-md pull-right"
+                          <button class="btn btn-md pull-right skip-button"
                                   ng-cloak
                                   ng-class="{disabled: data.now_playing.skippers.indexOf(data.my_uuid) !== -1,
-                                             'btn-danger': data.now_playing.skippers.length > 0,
+                                             'btn-primary': data.now_playing.skippers.length > 0,
                                              'btn-info': data.now_playing.skippers.length === 0}"
                                   ng-click="voteSkip(data.now_playing.id)">
-                            <ng-pluralize count="data.now_playing.left_to_skip"
-                                          when="{'1': 'falta 1 skip',
-                                                 'other': 'Faltam {} skips'}">
-                            </ng-pluralize>
-
+                            <i class="glyphicon glyphicon-forward"></i>
+                            <span class="skip-number" ng-if="data.now_playing.left_to_skip > 1">
+                              {{ data.now_playing.left_to_skip }}
+                            </span>
                           </button>
                         </div>
                       </div>
@@ -58,8 +52,7 @@
                   </th>
                 </tr>
               </div>
-
-              <form role="form" ng-submit="insertTrack()" class="vote-form">
+                        <form role="form" ng-submit="insertTrack()" class="vote-form">
                 <select class="form-control select-track" placeholder="Digite o nome de uma música..."
                           ng-model="newTrack"></select>
               </form>
@@ -79,8 +72,6 @@
                   <td><h4>{{ track.votes.length }}</h4></td>
                 </tr>
               </table>
-            </div>
-          </div>
           <footer>token do usuário: <code>{{ data.my_uuid }}</code></footer>
         </div>
       </div>
