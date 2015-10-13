@@ -69,7 +69,8 @@
       var insertTrack = function (identifier) {
         var service = identifier.split(';')[0];
         var service_id = identifier.split(';')[1];
-        return $http.post(API_URL + '/tracks/' + service + '/' + service_id + '/');
+        return $http.post(API_URL + '/tracks/',
+                          {'service': service, 'service_id': service_id});
       };
 
       var insertVote = function (track_id) {

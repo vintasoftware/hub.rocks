@@ -7,7 +7,7 @@ from model_mommy import mommy
 from mock import patch
 
 from tracks.models import Track
-from tracks.endpoints import VoteAPIView, InsertTrackAPIView
+from tracks.endpoints import VoteAPIView, ListCreateTrackAPIView
 from tracks.tests.utils import TrackAPITestCase
 from player.models import PlayerStatus
 
@@ -56,7 +56,7 @@ class VoteSkipNowPlayingAPIViewTestCase(TrackAPITestCase):
 class TrackListAPIViewTestCase(TrackAPITestCase):
 
     def request(self, establishment):
-        url = reverse('api:list',
+        url = reverse('api:list-create',
                       kwargs={'establishment': establishment.username})
         return self.client.get(url)
 
@@ -72,10 +72,9 @@ class TrackListAPIViewTestCase(TrackAPITestCase):
 
 class InsertTrackAndVoteAPIViewTestCase(TrackAPITestCase):
 
-    def get_insert_url(self, service_id, service):
-        return reverse('api:insert',
-                       kwargs={'establishment': self.establishment.username,
-                               'service_id': service_id, 'service': service})
+    def get_insert_url(self):
+        return reverse('api:list-create',
+                       kwargs={'establishment': self.establishment.username})
 
     def get_vote_url(self, track_id):
         return reverse('api:vote',
@@ -90,23 +89,25 @@ class InsertTrackAndVoteAPIViewTestCase(TrackAPITestCase):
             service_id=service_id,
             establishment=establishment)[0]
 
-    @patch.object(InsertTrackAPIView, 'broadcast_list_changed')
+    @patch.object(ListCreateTrackAPIView, 'broadcast_list_changed')
     def test_vote_existing_track(self, mock):
         with patch.object(Track, 'fetch_and_save_track',
                           side_effect=self.create_track):
-            response = self.client.post(self.get_insert_url(
-                                                     self.track.service_id,
-                                                     'deezer'))
+            response = self.client.post(self.get_insert_url(),
+                                        data={'service_id': self.track.service_id,
+                                              'service': 'deezer'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(self.track.votes.count(), 1)
         self.assertEqual(mock.call_count, 1)
 
-    @patch.object(InsertTrackAPIView, 'broadcast_list_changed')
+    @patch.object(ListCreateTrackAPIView, 'broadcast_list_changed')
     def test_vote_new_track(self, mock):
 
         with patch.object(Track, 'fetch_and_save_track',
                           side_effect=self.create_track):
-            response = self.client.post(self.get_insert_url('22222', 'deezer'))
+            response = self.client.post(self.get_insert_url(),
+                                        {'service_id': '22222',
+                                         'service': 'deezer'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         track = Track.objects.get(establishment=self.establishment,
                                   service_id='22222')
@@ -114,12 +115,13 @@ class InsertTrackAndVoteAPIViewTestCase(TrackAPITestCase):
         self.assertEqual(mock.call_count, 1)
 
     @patch.object(VoteAPIView, 'broadcast_list_changed')
-    @patch.object(InsertTrackAPIView, 'broadcast_list_changed')
+    @patch.object(ListCreateTrackAPIView, 'broadcast_list_changed')
     def test_unvote_existing_track(self, mock1, mock2):
         with patch.object(Track, 'fetch_and_save_track',
                           side_effect=self.create_track):
-            url = self.get_insert_url(self.track.service_id, 'deezer')
-            response = self.client.post(url)
+            url = self.get_insert_url()
+            response = self.client.post(url, {'service_id': self.track.service_id,
+                                              'service': 'deezer'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(self.track.votes.count(), 1)
         response = self.client.delete(self.get_vote_url(self.track.id))
