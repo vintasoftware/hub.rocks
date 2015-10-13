@@ -11,7 +11,7 @@ class VoteSerializer(serializers.ModelSerializer):
 
 
 class TrackSerializer(serializers.ModelSerializer):
-    votes = VoteSerializer(many=True)
+    votes = VoteSerializer(many=True, read_only=True)
     voters = serializers.SerializerMethodField()
     skippers = serializers.SerializerMethodField()
 
@@ -19,6 +19,7 @@ class TrackSerializer(serializers.ModelSerializer):
         model = Track
         fields = ('id', 'service_id', 'artist', 'title',
                   'votes', 'voters', 'skippers', 'service')
+        read_only_fields = ('id', 'artist', 'title')
 
     def get_voters(self, track):
         return list(track.votes.values_list('token', flat=True))
@@ -32,6 +33,12 @@ class TrackSerializer(serializers.ModelSerializer):
         rep['left_to_skip'] = (len(rep['votes']) + 1 -
                                len(rep['skippers']))
         return rep
+
+    def create(self, validated_data):
+        establishment = self.context['establishment']
+        return Track.fetch_and_save_track(
+            establishment=establishment, service=validated_data['service'],
+            service_id=validated_data['service_id'])
 
 
 class TrackListSerializer(serializers.Serializer):

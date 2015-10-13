@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import generics, mixins, status
+from rest_framework import generics, mixins, status, views, renderers
 from rest_framework.response import Response
 from requests.exceptions import RequestException
 
@@ -17,7 +17,7 @@ from tracks.mixins import (
 
 
 class VoteSkipNowPlayingAPIView(SkipTrackMixin, GetTokenMixin,
-                                generics.GenericAPIView):
+                                views.APIView):
 
     def post(self, request, *args, **kwargs):
         token = self.get_token()
@@ -39,41 +39,42 @@ class VoteSkipNowPlayingAPIView(SkipTrackMixin, GetTokenMixin,
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-class TrackListAPIView(SerializeTrackListMixin,
-                       generics.GenericAPIView):
-    serializer_class = TrackListSerializer
+class ListCreateTrackAPIView(GetTokenMixin, BroadCastTrackChangeMixin,
+                             generics.ListCreateAPIView):
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TrackListSerializer
+        else:
+            return TrackSerializer
 
-    def get(self, request, *args, **kwargs):
-        serializer = self.track_list_serialize()
-        return Response(serializer.data)
-
-
-class InsertTrackAPIView(GetTokenMixin, BroadCastTrackChangeMixin,
-                         generics.CreateAPIView):
-    def create(self, request, *args, **kwargs):
-        service_id = self.kwargs['service_id']
-        service = self.kwargs['service']
-
+    def perform_create(self, serializer):
         try:
-            self.track = Track.fetch_and_save_track(service, service_id,
-                                                    self.establishment)
-            Vote.objects.create(track=self.track, token=self.get_token())
+            super(ListCreateTrackAPIView, self).perform_create(serializer)
+            Vote.objects.create(track=serializer.instance,
+                                token=self.get_token())
         except RequestException:
             return Response(
                 status=status.HTTP_503_SERVICE_UNAVAILABLE)
         except ValueError as e:
             return Response(
                 status=status.HTTP_400_BAD_REQUEST, data=e.message)
-
-        serializer = TrackSerializer(self.track)
         self.broadcast_list_changed()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+        serializer = self.track_list_serialize()
+        return Response(serializer.data)
+
+    def get_serializer_context(self):
+        context = super(ListCreateTrackAPIView, self).get_serializer_context()
+        context['establishment'] = self.establishment
+        return context
 
 
 class VoteAPIView(BroadCastTrackChangeMixin,
                   GetTokenMixin, mixins.DestroyModelMixin,
                   generics.CreateAPIView):
     serializer_class = VoteSerializer
+    renderer_classes = [renderers.JSONRenderer]
 
     def get_serializer(self, *args, **kwargs):
         kwargs['data'] = {'token': self.get_token(),
@@ -103,7 +104,7 @@ class VoteAPIView(BroadCastTrackChangeMixin,
 
 
 class PlayingStatusAPIView(EstablishmentViewMixin,
-                           PlayingStatusMixin, 
+                           PlayingStatusMixin,
                            generics.RetrieveUpdateAPIView):
     serializer_class = PlayerStatusSerializer
     authentication_classes = (SessionAuthentication,)
