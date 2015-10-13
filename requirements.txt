@@ -10,7 +10,6 @@ django-compressor==1.4
 django-fanout==1.1.0
 django-libsass==0.2
 django-model-utils==2.2
-django-naomi==0.6
 django-storages-redux==1.2.2
 django-widget-tweaks==1.4.1
 djangorestframework==3.2.4
@@ -29,3 +28,4 @@ pytz==2014.10
 requests==2.5.1
 responses==0.4.0
 six==1.9.0
+git+https://github.com/vintasoftware/django-naomi.git@fix-webbrowser-open
