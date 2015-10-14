@@ -62,7 +62,8 @@
               <li><a href="{% url 'tracks:vote' request.user %}">Minha Estação</a></li> 
               <li><a href="{% url 'accounts:logout' %}">Logout</a></li> 
             {% else %}
-              <li><a href="{% url 'accounts:login' %}">Login</a></li>
+              <li><a href="{% url 'accounts:signup' %}">Sign Up</a></li>
+              <li><a href="{% url 'accounts:login' %}">Log In</a></li>
             {% endif %}
           </ul>
         </div>
