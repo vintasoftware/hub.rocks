@@ -42,6 +42,10 @@ MANAGERS = ADMINS
 
 AUTH_USER_MODEL = 'accounts.Account'
 
+# Login
+LOGIN_URL = 'accounts:login'
+LOGOUT_URL = 'accounts:logout'
+
 # Application definition
 INSTALLED_APPS = (
     'django.contrib.admin',
