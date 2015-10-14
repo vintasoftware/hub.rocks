@@ -28,3 +28,11 @@ class AccountCreateForm(forms.ModelForm):
             self.add_error('password2', "The two passwords don't match")
 
         return cleaned_data
+
+    def save(self, commit=True):
+        user = super(AccountCreateForm, self).save(commit=False)
+
+        user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+        return user

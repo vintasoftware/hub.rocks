@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from django.views.generic import CreateView, TemplateView
+from django.contrib import auth
 from django.core.urlresolvers import reverse
 
 from authtools.views import LoginView, LogoutView
@@ -16,8 +17,17 @@ class AccountCreateView(CreateView):
     def get_success_url(self):
         return reverse('accounts:welcome')
 
+    def form_valid(self, form):
+        response = super(AccountCreateView, self).form_valid(form)
+        new_user = auth.authenticate(username=form.cleaned_data['username'],
+                                     password=form.cleaned_data['password'])
 
-class WelcomeTemplateView(LoginRequiredMixin, TemplateView):
+        auth.login(self.request, new_user)
+
+        return response
+
+
+class WelcomeTemplateView(TemplateView, LoginRequiredMixin):
     template_name = 'account/welcome.html'
 
 
