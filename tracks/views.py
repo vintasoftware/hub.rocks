@@ -1,4 +1,5 @@
 from django.views import generic
+from django.core.urlresolvers import reverse_lazy
 
 
 from tracks.mixins import EstablishmentViewMixin
@@ -15,3 +16,10 @@ class VoteView(EstablishmentViewMixin,
             establishment=self.establishment)[0].playing
         context['can_play_pause'] = self.establishment == self.request.user
         return context
+
+
+class HomeView(generic.RedirectView):
+    permanent = False
+
+    def get_redirect_url(self):
+        return reverse_lazy('accounts:login')
