@@ -12,7 +12,7 @@
               <form method="post">
                 {% csrf_token %}
                 <div class="form-group required {% if form.first_name.errors %}has-error{% endif %}">
-                  <label class="text required control-label" data-placement="right" data-toggle="tooltip" data-trigger="hover">First Name*
+                  <label class="text required control-label" data-placement="right" data-toggle="tooltip" data-trigger="hover">Nome*
                   </label>
                   <div>
                     {{ form.first_name|add_class:'form-control required input-lg'}}
@@ -22,7 +22,7 @@
                   {% endfor %}
                 </div>              
                 <div class="form-group required {% if form.last_name.errors %}has-error{% endif %}">
-                  <label class="text required control-label" data-placement="right" data-toggle="tooltip" data-trigger="hover">Last Name*
+                  <label class="text required control-label" data-placement="right" data-toggle="tooltip" data-trigger="hover">Sobrenome*
                   </label>
                   <div>
                     {{ form.last_name|add_class:'form-control required input-lg'}}
@@ -43,7 +43,7 @@
                 </div>
                 <div class="form-group required {% if form.password.errors %}has-error{% endif %}">
                   <label class="text required control-label" data-placement="right" data-toggle="tooltip" data-trigger="hover">
-                    Password*
+                    Senha*
                   </label>
                   <div>
                     {{ form.password|add_class:'form-control required input-lg'}}
@@ -53,7 +53,7 @@
                   {% endfor %}
                 </div>              
                 <div class="form-group required {% if form.password2.errors %}has-error{% endif %}">
-                  <label class="text required control-label" data-placement="right" data-toggle="tooltip" data-trigger="hover">Confirm your password*
+                  <label class="text required control-label" data-placement="right" data-toggle="tooltip" data-trigger="hover">Confirme sua senha*
                   </label>
                   <div>
                     {{ form.password2|add_class:'form-control required input-lg'}}
@@ -63,7 +63,7 @@
                   {% endfor %}
                 </div>              
                 <div class="form-group required {% if form.username.errors %}has-error{% endif %}">
-                  <label class="control-label">Station Name*</label>
+                  <label class="control-label">Nome da Estação*</label>
                   <div class="input-group">
                     <span class="input-group-addon"><h4>hub.rocks/</h4></span>
                     {{ form.username|add_class:'form-control required input-lg'}}
@@ -72,7 +72,7 @@
                     <label class="label label-primary">{{ error }}</span>
                   {% endfor %}
                 </div>
-                <button class="btn btn-success pull-right" type="submit">Send</button>
+                <button class="btn btn-success pull-right" type="submit">Registrar</button>
               </form>
             </div>
         </div>
