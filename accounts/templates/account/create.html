@@ -4,6 +4,7 @@
 
 {% block content %}
   <div class="container">
+    {{ form.errors }}
     <div class="row">
       <div class="col-sm-6 col-sm-offset-3">
         <div class="panel panel-primary">
@@ -41,12 +42,12 @@
                     <label class="label label-primary">{{ error }}</span>
                   {% endfor %}
                 </div>
-                <div class="form-group required {% if form.password.errors %}has-error{% endif %}">
+                <div class="form-group required {% if form.password1.errors %}has-error{% endif %}">
                   <label class="text required control-label" data-placement="right" data-toggle="tooltip" data-trigger="hover">
                     Senha*
                   </label>
                   <div>
-                    {{ form.password|add_class:'form-control required input-lg'}}
+                    {{ form.password1|add_class:'form-control required input-lg'}}
                   </div>
                   {% for error in form.password.errors %}
                     <label class="label label-primary">{{ error }}</span>

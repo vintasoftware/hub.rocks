@@ -5,13 +5,14 @@ from django.contrib import auth
 from django.core.urlresolvers import reverse
 
 from authtools.views import LoginView, LogoutView
+from authtools.forms import UserCreationForm
 from braces.views import LoginRequiredMixin
 
 from accounts.forms import AccountCreateForm
 
 
 class AccountCreateView(CreateView):
-    form_class = AccountCreateForm
+    form_class = UserCreationForm
     template_name = 'account/create.html'
 
     def get_success_url(self):
@@ -20,7 +21,7 @@ class AccountCreateView(CreateView):
     def form_valid(self, form):
         response = super(AccountCreateView, self).form_valid(form)
         new_user = auth.authenticate(username=form.cleaned_data['username'],
-                                     password=form.cleaned_data['password'])
+                                     password=form.cleaned_data['password1'])
 
         auth.login(self.request, new_user)
 
