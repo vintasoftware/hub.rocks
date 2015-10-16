@@ -5,7 +5,7 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" {% block ng_app %}{% endblock %}> <!--<![endif]-->
 <head>
   <!-- Based on: https://github.com/xenith/django-base-template -->
 
@@ -38,7 +38,7 @@
   </script>
   <!--End of Google Analytics Script-->
 </head>
-<body>
+<body {% block ng_controller %}{% endblock %}>
 {% block body %}
   <!--[if lt IE 7]>
     <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -49,10 +49,24 @@
       <div class="container">
         <div class="navbar-header">
           <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-music"></span> Hub.Rocks</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
         </div>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="http://www.vinta.com.br/" target="_blank">by Vinta Software Studio</a></li>
-        </ul>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav navbar-right">
+            {% if request.user.is_authenticated %}
+              <li><a href="{% url 'player:player' %}">Meu Player</a></li> 
+              <li><a href="{% url 'tracks:vote' request.user %}">Minha Estação</a></li> 
+              <li><a href="{% url 'accounts:logout' %}">Logout</a></li> 
+            {% else %}
+              <li><a href="{% url 'accounts:signup' %}">Sign Up</a></li>
+              <li><a href="{% url 'accounts:login' %}">Log In</a></li>
+            {% endif %}
+          </ul>
+        </div>
       </div>
     </header>
   {% endblock %}
@@ -60,7 +74,9 @@
   <!-- Main -->
   <div role="main" class="container content-container">
     {% block main %}
-      <div class="content">{% block content %}{% endblock %}</div>
+      <div class="content">{% block content %}{% endblock %}
+        {% block vote %}{% endblock vote %}
+      </div>
     {% endblock %}
   </div>
 

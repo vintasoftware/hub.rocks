@@ -1,84 +1,86 @@
+{% extends 'base.html' %}
 {% load compress %}
 {% load staticfiles %}
 
-<!DOCTYPE html>
-<html ng-app="hubrocks">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% block ng_app %}ng-app="hubrocks"{% endblock %}
+{% block ng_controller %}ng-controller="HubrocksCtrl"{% endblock %}
 
-    <title>hub.rocks</title>
 
-    {% compress css %}
-      <link rel="stylesheet" type="text/x-scss" href="{% static 'bootstrap-sass/assets/stylesheets/_bootstrap.scss' %}">
-      <link rel="stylesheet" type="text/css" href="{% static 'selectize/dist/css/selectize.bootstrap3.css' %}">
-      <link rel="stylesheet" type="text/x-scss" href="{% static 'sass/vote.scss' %}">
-    {% endcompress %}
-  </head>
+{% block page_title%}hub.rocks{% endblock %}
 
-  <body ng-controller="HubrocksCtrl">
-    {% verbatim %}
+{% block css %}
+  {% compress css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'selectize/dist/css/selectize.bootstrap3.css' %}">
+    <link rel="stylesheet" type="text/x-scss" href="{% static 'sass/vote.scss' %}">
+  {% endcompress %}
+{% endblock %}
+
+{% block content %}
+  {% verbatim %}
     <div class="container">
-      <div class="col-xs-12">
-        <h1><span class="glyphicon glyphicon-music"></span> hub.rocks</h1>
-        <table class="table table-bordered table-striped no-margin">
-          <tr>
-            <th></th>
-            <th colspan="2">
-              <span ng-cloak ng-if="data.now_playing.id">
-                <span ng-cloak ng-if="!CAN_PLAY_PAUSE">
-                  <span class="glyphicon glyphicon-play"></span> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
-                </span>
-                <span ng-cloak ng-if="CAN_PLAY_PAUSE">
-                  <a ng-click="changePlayerStatus(!data.playing)"><span class="glyphicon" ng-class="!data.playing ? 'glyphicon-play' : 'glyphicon-pause'"></span></a> Tocando agora: {{ data.now_playing.title }} - {{ data.now_playing.artist }}
-                </span>
-                <button class="btn btn-xs pull-right"
-                        ng-cloak
-                        ng-class="{disabled: data.now_playing.skippers.indexOf(data.my_uuid) !== -1,
-                                   'btn-danger': data.now_playing.skippers.length > 0,
-                                   'btn-info': data.now_playing.skippers.length === 0}"
-                        ng-click="voteSkip(data.now_playing.id)">
-                  <ng-pluralize count="data.now_playing.left_to_skip"
-                                when="{'1': 'falta 1 skip',
-                                       'other': 'faltam {} skips'}">
-                  </ng-pluralize>
+      <div class="row">
+        <div class="col-xs-12">
+                <div class="well">
+                    <span ng-cloak ng-if="data.now_playing.id">
+                      <div class="row">
+                        <div class="col-md-2 player-img">
+                          <img src="https://i.ytimg.com/vi/{{ data.now_playing.service_id }}/default.jpg">
+                        </div>
+                        <div class="col-md-8 playing-now">
+                          <a class="pause-button" ng-cloak ng-if="CAN_PLAY_PAUSE" ng-click="changePlayerStatus(!data.playing)"><span class="glyphicon" ng-class="!data.playing ? 'glyphicon-play' : 'glyphicon-pause'"></span></a>
+                          <h4>Tocando agora:<br><b>{{ data.now_playing.title }} - {{ data.now_playing.artist }}</b></h4>
+                        </div>
+                          </span>
+                        <div class="col-md-2">
+                          <button class="btn btn-md pull-right skip-button"
+                                  ng-cloak
+                                  ng-class="{disabled: data.now_playing.skippers.indexOf(data.my_uuid) !== -1,
+                                             'btn-primary': data.now_playing.skippers.length > 0,
+                                             'btn-info': data.now_playing.skippers.length === 0}"
+                                  ng-click="voteSkip(data.now_playing.id)">
+                            <i class="glyphicon glyphicon-forward"></i>
+                            <span class="skip-number" ng-if="data.now_playing.left_to_skip > 1">
+                              {{ data.now_playing.left_to_skip }}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </span>
+                    <span ng-cloak ng-if="!data.now_playing.id">
+                      Escolha uma música abaixo:
+                    </span>
+                  </th>
+                </tr>
+              </div>
+                        <form role="form" ng-submit="insertTrack()" class="vote-form">
+                <select class="form-control select-track" placeholder="Digite o nome de uma música..."
+                          ng-model="newTrack"></select>
+              </form>
 
-                </button>
-              </span>
-              <span ng-cloak ng-if="!data.now_playing.id">
-                Escolha uma música abaixo:
-              </span>
-            </th>
-          </tr>
-        </table>
 
-        <form role="form" ng-submit="insertTrack()" class="vote-form">
-          <select class="form-control select-track" placeholder="Digite o nome de uma música..."
-                    ng-model="newTrack"></select>
-        </form>
-
-
-        <table class="table table-bordered table-striped">
-          <tr ng-cloak ng-repeat="track in data.tracks">
-            <td class="text-center">
-              <button class="btn btn-xs"
-                      ng-if="track.voters.indexOf(data.my_uuid) === -1"
-                      ng-click="insertVote(track.id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-              <button class="btn btn-xs"
-                      ng-if="track.voters.indexOf(data.my_uuid) !== -1"
-                      ng-click="deleteVote(track.id)"><span class="glyphicon glyphicon-remove"></span></button>
-            </td>
-            <td>{{ track.title }} - {{ track.artist }}</td>
-            <td>{{ track.votes.length }}</td>
-          </tr>
-        </table>
-
-        <footer>token do usuário: <code>{{ data.my_uuid }}</code></footer>
+              <table class="table">
+                <tr ng-cloak ng-repeat="track in data.tracks">
+                  <td class="text-center">
+                    <button class="btn btn-xs"
+                            ng-if="track.voters.indexOf(data.my_uuid) === -1"
+                            ng-click="insertVote(track.id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                    <button class="btn btn-xs btn-danger"
+                            ng-if="track.voters.indexOf(data.my_uuid) !== -1"
+                            ng-click="deleteVote(track.id)"><span class="glyphicon glyphicon-remove"></span></button>
+                  </td>
+                  <td><h4>{{ track.title }} - {{ track.artist }}</h4></td>
+                  <td><h4>{{ track.votes.length }}</h4></td>
+                </tr>
+              </table>
+          <footer>token do usuário: <code>{{ data.my_uuid }}</code></footer>
+        </div>
       </div>
     </div>
-    {% endverbatim %}
+  {% endverbatim %}
+{% endblock %}
 
-    {% compress js %}
+{% block js %}
+  {% compress js %}
     <script type="text/javascript" src="{% static 'jquery/dist/jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'angular/angular.js' %}"></script>
     <script type="text/javascript" src="{% static 'angular-local-storage/dist/angular-local-storage.js' %}"></script>
@@ -107,6 +109,7 @@
       var YOUTUBE_KEY = '{{ YOUTUBE_KEY }}';
       var DEEZER_ICON = "{% static 'img/deezer.png' %}";
       var YOUTUBE_ICON = "{% static 'img/youtube.png' %}";
+      var ESTABLISHMENT = '{{ establishment }}';
       {% if can_play_pause %}
       {# this is to avoid multiple verbatim #}
       var CAN_PLAY_PAUSE = true;
@@ -117,6 +120,5 @@
 
     <script src="{% static 'js/vote.js' %}"></script>
     <script src="{% static 'js/select-track.js' %}"></script>
-    {% endcompress %}
-  </body>
-</html>
+  {% endcompress %}
+{% endblock %}

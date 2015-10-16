@@ -164,6 +164,13 @@ var onYouTubeIframeAPIReady = null;
       DZ.player.pause();
     };
 
+    var stopIfPlaying = function () {
+      if (playing) {
+        playing = false;
+        DZ.player.pause();
+      }
+    };
+
     var isReady = function () {
       return ready;
     };
@@ -183,6 +190,7 @@ var onYouTubeIframeAPIReady = null;
     return {
       playTrack: playTrack,
       stopNowPlaying: stopNowPlaying,
+      stopIfPlaying: stopIfPlaying,
       isReady: isReady,
       resumeIfPaused: resumeIfPaused,
       pauseIfPlaying: pauseIfPlaying
@@ -199,7 +207,7 @@ var onYouTubeIframeAPIReady = null;
       YoutubeBackend.stopNowPlaying();
       DeezerBackend.playTrack(track);
     } else {
-      DeezerBackend.stopNowPlaying();
+      DeezerBackend.stopIfPlaying();
       YoutubeBackend.playTrack(track);
     }
   }
@@ -274,7 +282,7 @@ var onYouTubeIframeAPIReady = null;
         if (YoutubeBackend.isReady()) {
           console.log("youtube ready!");
         }
-        if (!DeezerBackend.isReady() || !YoutubeBackend.isReady()) {
+        if ((ESTABLISHMENT === "vinta" && !DeezerBackend.isReady()) || !YoutubeBackend.isReady()) {
           waitForPlayersReady();
         } else {
           tryToContinuePlaying();
