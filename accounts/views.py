@@ -8,8 +8,6 @@ from authtools.views import LoginView, LogoutView
 from authtools.forms import UserCreationForm
 from braces.views import LoginRequiredMixin
 
-from accounts.forms import AccountCreateForm
-
 
 class AccountCreateView(CreateView):
     form_class = UserCreationForm
