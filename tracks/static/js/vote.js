@@ -39,10 +39,44 @@
         'my_uuid': my_uuid
       };
 
+      var fetchAlbumArtForNowPlaying = function () {
+        var transformRequest = function (data, headersGetter) {
+          // don't send Authorization header
+          var headers = headersGetter();
+          delete headers['Authorization'];
+          return headers;
+        };
+        if (data.now_playing.service === 'deezer') {
+          $http({
+            method: 'JSONP',
+            url: 'https://api.deezer.com/track/'+ data.now_playing.service_id + '?output=jsonp&callback=JSON_CALLBACK',
+            transformRequest: transformRequest
+          })
+            .success(function (newData) {
+              data.now_playing.image = newData.album.cover;
+            }).error(function () {
+              data.now_playing.image = null;
+            });
+        } else if (data.now_playing.service === 'youtube'){
+          $http({
+            method: 'GET',
+            url: 'https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' +
+                    data.now_playing.service_id + '&key=' + YOUTUBE_KEY,
+            transformRequest: transformRequest
+          })
+          .success(function(newData) {
+            data.now_playing.image = newData.items[0].snippet.thumbnails.default.url;
+          }).error(function () {
+            data.now_playing.image = null;
+          });
+        }
+      };
+
       var fetchTracks = function () {
         $http.get(API_URL + '/tracks/')
           .success(function (newData) {
             angular.extend(data, newData);
+            fetchAlbumArtForNowPlaying();
           });
       };
       fetchTracks();
@@ -58,6 +92,7 @@
       if (Faye) {
         Faye.subscribe('/tracks-' + ESTABLISHMENT, function (newData) {
           angular.extend(data, newData);
+          fetchAlbumArtForNowPlaying();
         });
         Faye.subscribe('/player-status-' + ESTABLISHMENT, function (playerStatus) {
           angular.extend(data, playerStatus);

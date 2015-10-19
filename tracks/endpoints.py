@@ -8,7 +8,7 @@ from player.serializers import PlayerStatusSerializer
 from tracks.serializers import (
     VoteSerializer, TrackListSerializer, TrackSerializer)
 from player.mixins import PlayingStatusMixin
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication
 from tracks.models import Track, Vote
 from tracks.mixins import (
@@ -108,7 +108,7 @@ class PlayingStatusAPIView(EstablishmentViewMixin,
                            generics.RetrieveUpdateAPIView):
     serializer_class = PlayerStatusSerializer
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def put(self, request, *args, **kwargs):
         if self.establishment == request.user:
