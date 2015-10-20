@@ -35,7 +35,12 @@ footer {
   i {
     vertical-align: text-bottom;
     float: left;
-    margin-top: 4px;
+    left: 2px;
+    top: 0;
+  }
+
+  .multiple-skips {
+    margin-top: 5px;
   }
 
   .skip-number {
@@ -51,6 +56,13 @@ table {
       left: 1px;
       top: 2px;
     }
+  }
+}
+
+.btn-vote {
+  span {
+    left: 0px;
+    top: 2px;
   }
 }
 
@@ -105,7 +117,7 @@ table {
   z-index: 2;
   position: absolute;
   display: block;
-  top: 8px;
+  top: 32px;
   right: 34px;
   width: 16px;
   height: 16px;

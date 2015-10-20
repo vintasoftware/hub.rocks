@@ -24,7 +24,7 @@
                     <span ng-cloak ng-if="data.now_playing.id">
                       <div class="row">
                         <div class="col-md-2 player-img">
-                          <img src="https://i.ytimg.com/vi/{{ data.now_playing.service_id }}/default.jpg">
+                          <img ng-src="{{ data.now_playing.image }}">
                         </div>
                         <div class="col-md-8 playing-now">
                           <a class="pause-button" ng-cloak ng-if="CAN_PLAY_PAUSE" ng-click="changePlayerStatus(!data.playing)"><span class="glyphicon" ng-class="!data.playing ? 'glyphicon-play' : 'glyphicon-pause'"></span></a>
@@ -37,8 +37,9 @@
                                   ng-class="{disabled: data.now_playing.skippers.indexOf(data.my_uuid) !== -1,
                                              'btn-primary': data.now_playing.skippers.length > 0,
                                              'btn-info': data.now_playing.skippers.length === 0}"
-                                  ng-click="voteSkip(data.now_playing.id)">
-                            <i class="glyphicon glyphicon-forward"></i>
+                                  ng-click="voteSkip(data.now_playing.id)"
+                                  ng-if="data.playing">
+                            <i class="glyphicon glyphicon-forward" ng-class="data.now_playing.left_to_skip > 1 ? 'multiple-skips' : ''"></i>
                             <span class="skip-number" ng-if="data.now_playing.left_to_skip > 1">
                               {{ data.now_playing.left_to_skip }}
                             </span>
@@ -61,10 +62,10 @@
               <table class="table">
                 <tr ng-cloak ng-repeat="track in data.tracks">
                   <td class="text-center">
-                    <button class="btn btn-xs"
+                    <button class="btn-vote btn btn-xs"
                             ng-if="track.voters.indexOf(data.my_uuid) === -1"
                             ng-click="insertVote(track.id)"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-                    <button class="btn btn-xs btn-danger"
+                    <button class="btn-vote btn btn-xs btn-danger"
                             ng-if="track.voters.indexOf(data.my_uuid) !== -1"
                             ng-click="deleteVote(track.id)"><span class="glyphicon glyphicon-remove"></span></button>
                   </td>
@@ -72,7 +73,7 @@
                   <td><h4>{{ track.votes.length }}</h4></td>
                 </tr>
               </table>
-          <footer>token do usuário: <code>{{ data.my_uuid }}</code></footer>
+          <footer ng-cloak>token do usuário: <code>{{ data.my_uuid }}</code></footer>
         </div>
       </div>
     </div>
