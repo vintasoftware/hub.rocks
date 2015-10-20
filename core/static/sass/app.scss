@@ -31,15 +31,20 @@ footer {
     margin-bottom: 0;
     list-style: none;
 
+    .follow-btn {
+      margin-right: 10px;
+    }
+
     li {
       display: inline-block;
-      padding: 5px 8px;
+      padding: 5px 0px;
       line-height: 1;
 
       .github-btn {
         overflow: hidden;
         border: 0;
       }
+
     }
   }
 
