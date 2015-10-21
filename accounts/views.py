@@ -35,7 +35,7 @@ class WelcomeTemplateView(TemplateView, LoginRequiredMixin):
 class UserLoginView(LoginView):
     template_name = 'account/login.html'
     form_class = RememberMeLoginForm
-    expiry_age = 30000000
+    expiry_age = 365 * 24 * 60 * 60
 
     def form_valid(self, form):
         result = super(UserLoginView, self).form_valid(form)
