@@ -35,11 +35,12 @@ class WelcomeTemplateView(TemplateView, LoginRequiredMixin):
 class UserLoginView(LoginView):
     template_name = 'account/login.html'
     form_class = RememberMeLoginForm
+    expiry_age = 30000000
 
     def form_valid(self, form):
         result = super(UserLoginView, self).form_valid(form)
         if form.cleaned_data['remember_me']:
-            self.request.session.set_expiry(30000000)
+            self.request.session.set_expiry(self.expiry_age)
         return result
 
     def get_success_url(self):
