@@ -2,12 +2,32 @@
 {% load compress %}
 {% load staticfiles %}
 
+{% block css %}
+  {% compress css %}
+    <link rel="stylesheet" type="text/x-scss" href="{% static 'sass/player.scss' %}">
+  {% endcompress %}
+{% endblock %}
+
+
 {% block page_title %}hub.rocks player{% endblock %}
 
 {% block content %}
   <div class="container">
     <div class="row">
-      <div class="col-xs-6 col-md-offset-2">
+      <h1>Welcome to {{ establishment }} Station</h1>
+      <div class="guide col-xs-12 col-md-6">
+        <ul>
+          <li>
+            <span class="light">1</span>
+            <h2>Access <b>www.hub.rocks/{{ establishment }}</b></h2>
+          </li>
+          <li>
+            <span class="dark">2</span>
+            <h2>Choose and vote on music!</h2>
+          </li>
+        </ul>
+      </div>
+      <div class="col-xs-12 col-md-6">
          <div id="dz-root"></div>
           {% if establishment == 'vinta' %}
             <div id="deezer-player" style="width:100%;" align="center"></div>

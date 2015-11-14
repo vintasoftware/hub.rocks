@@ -74,8 +74,7 @@ var onYouTubeIframeAPIReady = null;
     // this needs to be exposed
     onYouTubeIframeAPIReady = function() {
       player = new YT.Player('youtube-player', {
-        height: '390',
-        width: '640',
+        width: '100%',
         events: {
           'onReady': onPlayerReady,
           'onStateChange': onPlayerStateChange
@@ -140,8 +139,6 @@ var onYouTubeIframeAPIReady = null;
             container : 'deezer-player',
             cover : true,
             playlist : true,
-            width : 650,
-            height : 300,
             onload : function () {
               ready = true;
 
