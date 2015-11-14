@@ -202,20 +202,20 @@ var onYouTubeIframeAPIReady = null;
       data: { playing: true }
     });
     if (track.service == 'deezer') {
-      YoutubeBackend.stopNowPlaying();
+      // YoutubeBackend.stopNowPlaying();
       DeezerBackend.playTrack(track);
     } else {
       DeezerBackend.stopIfPlaying();
-      YoutubeBackend.playTrack(track);
+      // YoutubeBackend.playTrack(track);
     }
   }
 
   function handleStatusChange(isPlaying) {
     if (isPlaying) {
-      YoutubeBackend.resumeIfPaused();
+      // YoutubeBackend.resumeIfPaused();
       DeezerBackend.resumeIfPaused();
     } else {
-      YoutubeBackend.pauseIfPlaying();
+      // YoutubeBackend.pauseIfPlaying();
       DeezerBackend.pauseIfPlaying();
     }
   }
