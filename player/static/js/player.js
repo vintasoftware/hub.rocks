@@ -280,7 +280,7 @@ var onYouTubeIframeAPIReady = null;
         if (YoutubeBackend.isReady()) {
           console.log("youtube ready!");
         }
-        if ((ESTABLISHMENT === "vinta" && !DeezerBackend.isReady()) || !YoutubeBackend.isReady()) {
+        if (!DeezerBackend.isReady() || !YoutubeBackend.isReady()) {
           waitForPlayersReady();
         } else {
           tryToContinuePlaying();

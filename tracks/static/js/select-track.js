@@ -63,22 +63,18 @@ $(document).ready(function () {
         });
       }
 
-      if (ESTABLISHMENT === 'vinta') {
-        $.ajax({
-          url: 'http://api.deezer.com/search/track?output=jsonp&q=' +
-            encodeURIComponent(query),
-            dataType: 'jsonp',
-            error: function() {
-              results = [];
-            },
-            success: function(json) {
-              results = transformDeezerTracksJson(json.data.slice(0, 15));
-              callback(results);
-            }
-        });
-      } else {
-        callback(results);
-      }
+      $.ajax({
+        url: 'http://api.deezer.com/search/track?output=jsonp&q=' +
+          encodeURIComponent(query),
+          dataType: 'jsonp',
+          error: function() {
+            results = [];
+          },
+          success: function(json) {
+            results = transformDeezerTracksJson(json.data.slice(0, 15));
+            callback(results);
+          }
+      });
 
     },
     render: {
