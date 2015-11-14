@@ -47,21 +47,21 @@ $(document).ready(function () {
 
       var results = [];
 
-      if (YOUTUBE_KEY) {
-        $.ajax({
-          url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&key=' +
-            YOUTUBE_KEY + '&q=' + encodeURIComponent(query),
-          dataType: 'jsonp',
-          error: function () {
-          },
-          success: function (json) {
-            results = results.concat(transformYoutubeJson(json.items));
-          },
-          complete: function () {
-            callback(results);
-          }
-        });
-      }
+      // if (YOUTUBE_KEY) {
+      //   $.ajax({
+      //     url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&key=' +
+      //       YOUTUBE_KEY + '&q=' + encodeURIComponent(query),
+      //     dataType: 'jsonp',
+      //     error: function () {
+      //     },
+      //     success: function (json) {
+      //       results = results.concat(transformYoutubeJson(json.items));
+      //     },
+      //     complete: function () {
+      //       callback(results);
+      //     }
+      //   });
+      // }
 
       $.ajax({
         url: 'http://api.deezer.com/search/track?output=jsonp&q=' +
