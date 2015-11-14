@@ -280,7 +280,7 @@ var onYouTubeIframeAPIReady = null;
         if (YoutubeBackend.isReady()) {
           console.log("youtube ready!");
         }
-        if (!DeezerBackend.isReady() || !YoutubeBackend.isReady()) {
+        if (!DeezerBackend.isReady()) {
           waitForPlayersReady();
         } else {
           tryToContinuePlaying();
