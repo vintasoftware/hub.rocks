@@ -28,7 +28,7 @@
                         </div>
                         <div class="col-md-8 playing-now">
                           <a class="pause-button" ng-cloak ng-if="CAN_PLAY_PAUSE" ng-click="changePlayerStatus(!data.playing)"><span class="glyphicon" ng-class="!data.playing ? 'glyphicon-play' : 'glyphicon-pause'"></span></a>
-                          <h4>Tocando agora:<br><b>{{ data.now_playing.title }} - {{ data.now_playing.artist }}</b></h4>
+                          <h4>Playing now:<br><b>{{ data.now_playing.title }} - {{ data.now_playing.artist }}</b></h4>
                         </div>
                           </span>
                         <div class="col-md-2">
@@ -48,13 +48,13 @@
                       </div>
                     </span>
                     <span ng-cloak ng-if="!data.now_playing.id">
-                      Escolha uma música abaixo:
+                      Choose a music bellow:
                     </span>
                   </th>
                 </tr>
               </div>
                         <form role="form" ng-submit="insertTrack()" class="vote-form">
-                <select class="form-control select-track" placeholder="Digite o nome de uma música..."
+                <select class="form-control select-track" placeholder="Enter a music name..."
                           ng-model="newTrack"></select>
               </form>
 
@@ -73,7 +73,6 @@
                   <td><h4>{{ track.votes.length }}</h4></td>
                 </tr>
               </table>
-          <footer ng-cloak>token do usuário: <code>{{ data.my_uuid }}</code></footer>
         </div>
       </div>
     </div>

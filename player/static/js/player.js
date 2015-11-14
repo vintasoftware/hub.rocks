@@ -140,8 +140,6 @@ var onYouTubeIframeAPIReady = null;
             container : 'deezer-player',
             cover : true,
             playlist : true,
-            width : 650,
-            height : 300,
             onload : function () {
               ready = true;
 
