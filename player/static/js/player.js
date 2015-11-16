@@ -140,6 +140,8 @@ var onYouTubeIframeAPIReady = null;
             container : 'deezer-player',
             cover : true,
             playlist : true,
+            width : 650,
+            height : 300,
             onload : function () {
               ready = true;
 
@@ -202,20 +204,20 @@ var onYouTubeIframeAPIReady = null;
       data: { playing: true }
     });
     if (track.service == 'deezer') {
-      // YoutubeBackend.stopNowPlaying();
+      YoutubeBackend.stopNowPlaying();
       DeezerBackend.playTrack(track);
     } else {
       DeezerBackend.stopIfPlaying();
-      // YoutubeBackend.playTrack(track);
+      YoutubeBackend.playTrack(track);
     }
   }
 
   function handleStatusChange(isPlaying) {
     if (isPlaying) {
-      // YoutubeBackend.resumeIfPaused();
+      YoutubeBackend.resumeIfPaused();
       DeezerBackend.resumeIfPaused();
     } else {
-      // YoutubeBackend.pauseIfPlaying();
+      YoutubeBackend.pauseIfPlaying();
       DeezerBackend.pauseIfPlaying();
     }
   }
@@ -280,7 +282,7 @@ var onYouTubeIframeAPIReady = null;
         if (YoutubeBackend.isReady()) {
           console.log("youtube ready!");
         }
-        if (!DeezerBackend.isReady()) {
+        if ((ESTABLISHMENT === "vinta" && !DeezerBackend.isReady()) || !YoutubeBackend.isReady()) {
           waitForPlayersReady();
         } else {
           tryToContinuePlaying();

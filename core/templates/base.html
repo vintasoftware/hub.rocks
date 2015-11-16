@@ -58,8 +58,8 @@
         <div class="navbar-collapse collapse" id="navbar-main">
           <ul class="nav navbar-nav navbar-right">
             {% if request.user.is_authenticated %}
-              <li><a href="{% url 'player:player' %}">My Player</a></li> 
-              <li><a href="{% url 'tracks:vote' request.user %}">My Station</a></li> 
+              <li><a href="{% url 'player:player' %}">Meu Player</a></li> 
+              <li><a href="{% url 'tracks:vote' request.user %}">Minha Estação</a></li> 
               <li><a href="{% url 'accounts:logout' %}">Logout</a></li> 
             {% else %}
               <li><a href="{% url 'accounts:signup' %}">Sign Up</a></li>

@@ -47,34 +47,38 @@ $(document).ready(function () {
 
       var results = [];
 
-      // if (YOUTUBE_KEY) {
-      //   $.ajax({
-      //     url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&key=' +
-      //       YOUTUBE_KEY + '&q=' + encodeURIComponent(query),
-      //     dataType: 'jsonp',
-      //     error: function () {
-      //     },
-      //     success: function (json) {
-      //       results = results.concat(transformYoutubeJson(json.items));
-      //     },
-      //     complete: function () {
-      //       callback(results);
-      //     }
-      //   });
-      // }
-
-      $.ajax({
-        url: 'http://api.deezer.com/search/track?output=jsonp&q=' +
-          encodeURIComponent(query),
+      if (YOUTUBE_KEY) {
+        $.ajax({
+          url: 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&key=' +
+            YOUTUBE_KEY + '&q=' + encodeURIComponent(query),
           dataType: 'jsonp',
-          error: function() {
-            results = [];
+          error: function () {
           },
-          success: function(json) {
-            results = transformDeezerTracksJson(json.data.slice(0, 15));
+          success: function (json) {
+            results = results.concat(transformYoutubeJson(json.items));
+          },
+          complete: function () {
             callback(results);
           }
-      });
+        });
+      }
+
+      if (ESTABLISHMENT === 'vinta') {
+        $.ajax({
+          url: 'http://api.deezer.com/search/track?output=jsonp&q=' +
+            encodeURIComponent(query),
+            dataType: 'jsonp',
+            error: function() {
+              results = [];
+            },
+            success: function(json) {
+              results = transformDeezerTracksJson(json.data.slice(0, 15));
+              callback(results);
+            }
+        });
+      } else {
+        callback(results);
+      }
 
     },
     render: {

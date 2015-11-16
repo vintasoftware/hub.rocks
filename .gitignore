@@ -6,7 +6,6 @@
 /.coverage
 /coverage_html/
 /.env
-/env
 /components/
 /staticfiles/
 /media/
