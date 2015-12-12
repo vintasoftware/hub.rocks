@@ -44,6 +44,16 @@
                               {{ data.now_playing.left_to_skip }}
                             </span>
                           </button>
+                          <button class="btn btn-md btn-info pull-right vote-playing-button"
+                                  ng-cloak
+                                  ng-class="{disabled: data.now_playing.voters.indexOf(data.my_uuid) !== -1}"
+                                  ng-click="insertVote(data.now_playing.id)">
+                            <i class="glyphicon glyphicon-thumbs-up"
+                               ng-class="data.now_playing.left_to_skip > 1 ? 'multiple-skips' : ''">
+                            </i>
+                            <!-- the empty span bellow will expand height to match skip height -->
+                            <span class="skip-number" ng-if="data.now_playing.left_to_skip > 1"></span>
+                          </button>
                         </div>
                       </div>
                     </span>

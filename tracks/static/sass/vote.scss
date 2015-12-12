@@ -48,6 +48,19 @@ footer {
   }
 }
 
+.vote-playing-button {
+  @extend .skip-button;
+  margin-right: 10px;
+
+  i {
+    left: 0px;
+  }
+
+  .multiple-skips {
+    left: 4px;
+  }
+}
+
 table {
   button {
     margin-top: 7px;
