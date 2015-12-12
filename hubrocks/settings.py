@@ -35,7 +35,6 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 
 # Admins and Managers
 ADMINS = (
-    ('Vinta', 'contato@vinta.com.br'),
     ('Andre', 'andre@vinta.com.br'),
 )
 MANAGERS = ADMINS
