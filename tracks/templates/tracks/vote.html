@@ -54,8 +54,11 @@
                             <!-- the empty span bellow will expand height to match skip height -->
                             <span class="skip-number" ng-if="data.now_playing.left_to_skip > 1"></span>
                           </button>
-                          <button class="btn btn-md pull-right volume-button" data-toggle="modal" data-target="#volumeModal">
-                            <i class="glyphicon glyphicon-volume-up"></i>
+                          <button class="btn btn-md pull-right volume-button" ng-if="CAN_PLAY_PAUSE" data-toggle="modal" data-target="#volumeModal">
+                            <i class="glyphicon glyphicon-volume-up"
+                               ng-class="data.now_playing.left_to_skip > 1 ? 'multiple-skips' : ''"></i>
+                            <!-- the empty span bellow will expand height to match skip height -->
+                            <span class="skip-number" ng-if="data.now_playing.left_to_skip > 1"></span>
                           </button>
                           <!-- Modal -->
                           <div class="modal fade" id="volumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
