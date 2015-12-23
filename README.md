@@ -1,7 +1,7 @@
 # hub.rocks
 
 ## Dependencies
-* Python 2.7
+* Python 3.5
 
 ## Deployment (Heroku)
 - before deploying to Heroku, do this:
