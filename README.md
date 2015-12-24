@@ -1,6 +1,6 @@
 # hub.rocks
 
-[![Build Status](https://travis-ci.org/vintasoftware/hub.rocks.svg)](https://travis-ci.org/vintasoftware/hub.rocks)
+[![Build Status](https://travis-ci.org/vintasoftware/hub.rocks.svg?branch=master)](https://travis-ci.org/vintasoftware/hub.rocks)
 [![Code Health](https://landscape.io/github/vintasoftware/hub.rocks/master/landscape.svg?style=flat)](https://landscape.io/github/vintasoftware/hub.rocks/master)
 
 ## Dependencies
