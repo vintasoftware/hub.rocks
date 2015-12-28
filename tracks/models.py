@@ -23,7 +23,7 @@ class Track(TimeStampedModel):
         verbose_name = _("Track")
         unique_together = (("service_id", "establishment", "service"),)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Track {}: {} - {}".format(
             self.service_id,
             self.artist,

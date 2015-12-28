@@ -28,7 +28,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.username
 
     def get_full_name(self):
