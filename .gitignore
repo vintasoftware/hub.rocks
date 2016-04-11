@@ -10,3 +10,4 @@
 /staticfiles/
 /media/
 *.css.map
+.python-version
